@@ -3,8 +3,8 @@
 <meta name="theme-color" content="#bfe8ff"><title>Water Worlds · Aathiran's Science Adventure</title>
 <meta name="description" content="Water: where it comes from and how we use it. A 3D, multi-level, interactive Class 1 science worksheet.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%92%A7%3C/text%3E%3C/svg%3E">
-<link rel="preload" href="assets/drippy_hello.webp" as="image"><link rel="preload" href="assets/world_scene.webp" as="image">
-<link rel="modulepreload" href="assets/content.js">
+<meta http-equiv="Cache-Control" content="no-cache"><link rel="preload" href="assets/drippy_hello.webp" as="image"><link rel="preload" href="assets/world_scene.webp" as="image">
+
 <style>@font-face{font-family:"NunitoE";src:url(assets/nunito.woff2) format("woff2");font-weight:200 1000;font-display:swap}
 :root{--ink:#27324a;--sun:#ffd23f;--leaf:#2fb872;--leaf2:#1f8f57;--berry:#ff6a8d;--ocean:#2e86ff;--grape:#7d4fe8;--orange:#ff9b3d;--mint:#7fdcc1}
 *{box-sizing:border-box}
@@ -117,7 +117,7 @@ h1,h2,h3{margin:.15em 0;line-height:1.15}
 .opt .oi{font-size:46px}
 .opt.right{border-color:#5fd08f;background:#eafff1}
 /* modal */
-.ov{position:fixed;inset:0;z-index:60;background:#1b2440aa;display:flex;align-items:center;justify-content:center;padding:14px}
+.ov{position:fixed;top:0;right:0;bottom:0;left:0;z-index:60;background:#1b2440aa;display:flex;align-items:center;justify-content:center;padding:14px}
 .ov .box{background:#fff;border-radius:28px;max-width:520px;width:100%;max-height:92vh;overflow:auto;padding:16px;text-align:center;animation:popin .4s}
 @keyframes popin{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
 .ov .box img.mas{width:62%;max-width:260px}
@@ -125,7 +125,7 @@ h1,h2,h3{margin:.15em 0;line-height:1.15}
 @keyframes spin{from{transform:rotate(-200deg) scale(.2)}to{transform:rotate(0) scale(1)}}
 /* flying star */
 .fly{position:fixed;z-index:80;font-size:44px;pointer-events:none;transition:transform .9s cubic-bezier(.5,-.3,.7,1),opacity .9s}
-#cf{position:fixed;inset:0;pointer-events:none;z-index:90}
+#cf{position:fixed;top:0;right:0;bottom:0;left:0;pointer-events:none;z-index:90}
 /* badge + certificate */
 .badge{width:230px;height:230px;margin:6px auto;border-radius:50%;background:radial-gradient(circle,#fff7cf 0 55%,#ffd23f 56% 64%,#ff9b3d 65% 72%,#7d4fe8 73%);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 22px #0003;animation:spin 1.1s}
 .badge .t{font-weight:1000;font-size:21px;line-height:1.05;color:#4a2a9a}
@@ -141,7 +141,7 @@ h1,h2,h3{margin:.15em 0;line-height:1.15}
 /* ===== Water Worlds additions ===== */
 :root{--water:#2e86ff;--aqua:#5fd3ff;--lc:#2e86ff}
 body{background:linear-gradient(180deg,#bfe8ff 0,#e6f7ff 35%,#fff6e0 75%,#ffe9f1 100%);background-attachment:fixed}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(circle at 12% 18%,#ffffff88 0 40px,transparent 41px),radial-gradient(circle at 85% 30%,#ffffff66 0 60px,transparent 61px),radial-gradient(circle at 70% 85%,#5fd3ff22 0 90px,transparent 91px)}
+body:before{content:"";position:fixed;top:0;right:0;bottom:0;left:0;pointer-events:none;z-index:-1;background:radial-gradient(circle at 12% 18%,#ffffff88 0 40px,transparent 41px),radial-gradient(circle at 85% 30%,#ffffff66 0 60px,transparent 61px),radial-gradient(circle at 70% 85%,#5fd3ff22 0 90px,transparent 91px)}
 .pill b{font-size:16px}
 .spk{border:0;background:#eef6ff;border-radius:12px;min-height:36px;min-width:40px;font-size:17px;vertical-align:middle;margin-left:2px}
 .oimg{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 3px 3px #0002);pointer-events:none}
@@ -154,7 +154,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .hero h1{font-size:32px;text-align:center;margin-top:8px;color:#1b5fb5;text-shadow:0 3px 0 #bfe3ff}
 .hero .sub{text-align:center;font-weight:800;color:#5d6a85}
 .sky3d{position:relative;aspect-ratio:16/8;border-radius:22px;overflow:hidden;perspective:700px;--tx:0;--ty:0;background:#7cc8ff}
-.sky3d .lay{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .25s ease-out}
+.sky3d .lay{position:absolute;top:0;right:0;bottom:0;left:0;transform-style:preserve-3d;transition:transform .25s ease-out}
 .l0{transform:translate3d(calc(var(--tx)*-14px),calc(var(--ty)*-8px),0) scale(1.08)}
 .l0 img{width:100%;height:100%;object-fit:cover}
 .l1{transform:translate3d(calc(var(--tx)*28px),calc(var(--ty)*14px),40px)}.l1 img{position:absolute;width:26%;left:36%;top:3%;animation:drift 7s ease-in-out infinite}
@@ -164,12 +164,12 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 @keyframes spinS{to{transform:rotate(360deg)}}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10%)}}
 /* 3D level map */
-.map3d{perspective:1000px;margin:8px 0 4px;padding:6px 0;overflow-x:clip}
-.plane{position:relative;transform:rotateX(12deg);transform-origin:50% 100%;transform-style:preserve-3d;display:flex;flex-direction:column;gap:12px;padding:14px 8px 20px;border-radius:30px;background:linear-gradient(160deg,#5fd3ff,#2e86ff 60%,#1b5fb5);box-shadow:inset 0 -10px 0 #1b5fb588,0 14px 26px #1b5fb544}
-.plane:before{content:"";position:absolute;left:50%;top:30px;bottom:30px;width:10px;margin-left:-5px;background:repeating-linear-gradient(#fff 0 14px,transparent 14px 26px);opacity:.6;border-radius:6px}
-.isl{position:relative;display:flex;align-items:center;gap:10px;border:0;background:none;width:78%;min-height:92px;padding:0;text-align:left;transform:translateZ(6px);animation:float 3s ease-in-out infinite;animation-delay:calc(var(--i)*-.4s)}
+.map3d{margin:8px 0 4px;padding:6px 0;overflow:hidden;border-radius:30px}
+.plane{position:relative;display:flex;flex-direction:column;gap:12px;padding:14px 8px 20px;border-radius:30px;background:linear-gradient(160deg,#5fd3ff,#2e86ff 60%,#1b5fb5);box-shadow:inset 0 -10px 0 #1b5fb588,0 14px 26px #1b5fb544}
+.plane:before{content:"";pointer-events:none;z-index:0;position:absolute;left:50%;top:30px;bottom:30px;width:10px;margin-left:-5px;background:repeating-linear-gradient(#fff 0 14px,transparent 14px 26px);opacity:.6;border-radius:6px}
+.isl{position:relative;z-index:1;color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent;cursor:pointer;display:flex;align-items:center;gap:10px;border:0;background:none;width:78%;min-height:92px;padding:0;text-align:left;animation:float 3s ease-in-out infinite;animation-delay:calc(var(--i)*-.4s)}
 .isl.l{align-self:flex-start}.isl.r{align-self:flex-end;flex-direction:row-reverse;text-align:right}
-@keyframes float{0%,100%{transform:translateZ(6px) translateY(0)}50%{transform:translateZ(6px) translateY(-6px)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 .isl .disc{flex:none;width:88px;height:88px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 12%,var(--bg) 13% 55%,var(--c) 56%);box-shadow:0 8px 0 #0003,0 0 0 5px #ffffffaa;display:flex;align-items:center;justify-content:center}
 .isl .ic{font-size:44px}
 .isl .lt{background:#fff;border-radius:20px;padding:6px 12px;box-shadow:0 5px 0 var(--c);flex:1;min-width:0}
@@ -188,7 +188,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .stage3d{position:relative;width:100%;aspect-ratio:4/3.3;max-height:62vh;border-radius:24px;overflow:hidden;background:linear-gradient(#bfe8ff,#e6f7ff);box-shadow:inset 0 0 0 4px #ffffff,0 6px 18px #2a4a7a22;margin:6px 0}
 @media(min-width:700px){.stage3d{aspect-ratio:16/9.5}}
 .stage3d canvas.gl{display:block;width:100%!important;height:100%!important;touch-action:pan-y}
-.stage3d .load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;color:#1b5fb5}
+.stage3d .load{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;font-weight:900;color:#1b5fb5}
 .stage3d canvas+.load,.stage3d .load:not(:only-child){display:none}
 .stage3d.flat{aspect-ratio:auto;max-height:none;padding:10px}
 .flatbg img{width:100%;border-radius:16px;max-height:180px;object-fit:cover}
@@ -229,17 +229,17 @@ input.temp::-webkit-slider-runnable-track{background:linear-gradient(90deg,#7cc8
 .prog{display:flex;gap:6px;justify-content:center}.prog i{width:18px;height:18px;border-radius:50%;background:#e3ebf4}.prog i.d{background:#5fd08f}.prog i.n{background:#ffd23f;animation:pop 1s infinite}
 /* puddle sim */
 .pscene{position:relative;width:100%;max-width:560px;margin:0 auto;aspect-ratio:4/3;border-radius:22px;overflow:hidden;background:linear-gradient(#8fb9d9,#cfe3f0);user-select:none}
-.psky{position:absolute;inset:0;background:linear-gradient(#5fc0ff,#bfe8ff);opacity:0}
+.psky{position:absolute;top:0;right:0;bottom:0;left:0;background:linear-gradient(#5fc0ff,#bfe8ff);opacity:0}
 .psun{position:absolute;width:22%;transform:translate(-50%,-50%);transition:left .1s,top .1s;filter:drop-shadow(0 0 18px #ffd23f)}
 .pcloud{position:absolute;width:34%;left:58%;top:4%;opacity:.15;transform-origin:50% 50%;transition:transform .3s;cursor:pointer}
 .pcloud.wig{animation:wig 1.2s infinite}
 .pground{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(#7fd36b,#4fb05a)}
 .pud{position:absolute;left:50%;bottom:9%;width:52%;height:15%;border-radius:50%;background:radial-gradient(#7cc8ff,#2e86ff);box-shadow:inset 0 -6px 0 #1b5fb566;transform:translateX(-50%);transform-origin:50% 60%}
 .pdr{position:absolute;width:16%;left:6%;bottom:6%}
-.vap{position:absolute;inset:0;pointer-events:none}
+.vap{position:absolute;top:0;right:0;bottom:0;left:0;pointer-events:none}
 .wv{position:absolute;bottom:22%;font-size:30px;opacity:.85;animation:rise 1.8s ease-out forwards}
 @keyframes rise{to{transform:translateY(-220%);opacity:0}}
-.prain{position:absolute;inset:0;pointer-events:none}
+.prain{position:absolute;top:0;right:0;bottom:0;left:0;pointer-events:none}
 .prain i{position:absolute;top:22%;width:6px;height:16px;border-radius:6px;background:#2e86ff;animation:fall .8s linear infinite}
 @keyframes fall{from{transform:translateY(0);opacity:1}to{transform:translateY(240%);opacity:.2}}
 /* fill */
@@ -272,11 +272,18 @@ input.temp::-webkit-slider-runnable-track{background:linear-gradient(90deg,#7cc8
 .ov .box img.mas{width:50%;max-width:220px}
 .lesson .line .e{font-size:36px}
 @media(max-width:420px){.hero h1{font-size:28px}.isl{width:90%}.isl .disc{width:76px;height:76px}.isl .ic{font-size:38px}.bub{font-size:19px}.task{font-size:19px}.slab{font-size:15px}}
+
+a.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.startb{width:auto;animation:none;font-size:24px}
+@supports not (aspect-ratio:1/1){.sky3d{height:50vw;max-height:410px}.stage3d{height:82vw;max-height:62vh}.stage3d.flat{height:auto}.pscene{height:75vw;max-height:420px}.cgame{height:105vw;max-height:590px}}
+.sky3d .lay{pointer-events:none}
+.jserr{position:fixed;left:8px;right:8px;bottom:8px;z-index:200;background:#fff3c4;border:3px solid #ffb703;border-radius:16px;padding:8px;font-weight:800;font-size:15px;text-align:center}
 </style></head><body>
 <header id="bar"><div class="in"><button id="home" type="button" aria-label="Map">🗺️</button><div class="t">Water Worlds</div>
 <span class="pill" id="pStars" title="Stars">⭐<b>0</b></span><span class="pill" id="pBadge" title="Badges">🏅<b>0</b></span>
 <button id="voice" type="button" aria-pressed="true" aria-label="Voice on or off">🔊</button></div></header>
-<main class="wrap" id="app"><p style="text-align:center;font-weight:900;margin-top:40px">Loading Water Worlds… 💧</p></main>
+<main class="wrap" id="app"><section class="hero"><div class="sky3d"><div class="lay l0"><img src="assets/world_scene.webp" alt="A sunny island with a river and the sea"></div><div class="lay l3"><img src="assets/drippy_hello.webp" alt="Drippy"></div></div><h1>💧 Water Worlds</h1><div class="sub">Where water comes from and how we use it</div><div class="row"><a class="btn g startb" href="#w1" data-lv="1" role="button">▶ Start: World 1</a></div><p class="muted center" id="ldmsg">Getting the worlds ready… 💧</p></section><section class="map3d" aria-label="Level map"><div class="plane"><a class="isl l next" href="#w1" role="button" data-lv="1" style="--c:#2e86ff;--bg:#e2f0ff;--i:0"><span class="disc"><span class="ic">🏝️</span></span><span class="lt"><small>World 1</small><b>Water Island</b><span class="stars">☆☆☆</span></span></a><a class="isl r " href="#w2" role="button" data-lv="2" style="--c:#7d4fe8;--bg:#efe8ff;--i:1"><span class="disc"><span class="ic">🧊</span></span><span class="lt"><small>World 2</small><b>Sun and Ice Lab</b><span class="stars">☆☆☆</span></span></a><a class="isl l " href="#w3" role="button" data-lv="3" style="--c:#00a6c8;--bg:#dff7fb;--i:2"><span class="disc"><span class="ic">🌧️</span></span><span class="lt"><small>World 3</small><b>Cloud Sky</b><span class="stars">☆☆☆</span></span></a><a class="isl r " href="#w4" role="button" data-lv="4" style="--c:#ff9b3d;--bg:#fff0dc;--i:3"><span class="disc"><span class="ic">🏠</span></span><span class="lt"><small>World 4</small><b>Water at Home</b><span class="stars">☆☆☆</span></span></a><a class="isl l " href="#w5" role="button" data-lv="5" style="--c:#2fb872;--bg:#e2f8ea;--i:4"><span class="disc"><span class="ic">🌱</span></span><span class="lt"><small>World 5</small><b>Green Garden</b><span class="stars">☆☆☆☆</span></span></a><a class="isl r " href="#w6" role="button" data-lv="6" style="--c:#ff6a8d;--bg:#ffe6ee;--i:5"><span class="disc"><span class="ic">🚰</span></span><span class="lt"><small>World 6</small><b>Save Water House</b><span class="stars">☆☆☆</span></span></a><a class="isl l " href="#w7" role="button" data-lv="7" style="--c:#ffb703;--bg:#fff6d1;--i:6"><span class="disc"><span class="ic">🦸</span></span><span class="lt"><small>World 7</small><b>Clean Water Hero</b><span class="stars">☆☆☆</span></span></a></div></section></main>
 <noscript><p style="text-align:center">Please turn on JavaScript to play.</p></noscript>
-<script src="assets/confetti.js"></script>
-<script type="module" src="assets/app.js"></script></body></html>
+<script>window.WATER_V="202610190511";window.addEventListener('error',function(e){try{var m=document.getElementById('ldmsg');if(m)m.textContent='Tap a world to start! 💧';if(!document.documentElement.classList.contains('js-ok')&&!document.querySelector('.jserr')){var d=document.createElement('div');d.className='jserr';d.innerHTML='Oops, the game did not load fully. <a href="?r=202610190511">Tap here to reload</a>';document.body.appendChild(d)}}catch(_){}});setTimeout(function(){if(!document.documentElement.classList.contains('js-ok')&&!document.querySelector('.jserr')){var d=document.createElement('div');d.className='jserr';d.innerHTML='Still loading… <a href="?r=202610190511">Tap here to reload</a>';document.body.appendChild(d)}},9000);</script>
+<script src="assets/confetti.js?v=202610190511" defer></script>
+<script src="assets/app.js?v=202610190511" defer></script></body></html>
