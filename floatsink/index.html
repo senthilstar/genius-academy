@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#d9f1ff"><title>Float or Sink Quest · Sashtika's Class 4 Science</title>
+<meta name="description" content="Float or Sink: the secret of why ships float. Interactive 3D density and buoyancy missions for Class 4.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%9A%A2%3C/text%3E%3C/svg%3E">
+<link rel="preload" href="assets/alien_teach.webp" as="image">
+<link rel="modulepreload" href="assets/three.min.mjs">
+<style>@font-face{font-family:"NunitoE";src:url(assets/nunito.woff2) format("woff2");font-weight:200 1000;font-display:swap}
+:root{--ink:#27324a;--sun:#ffd23f;--leaf:#2fb872;--leaf2:#1f8f57;--berry:#ff6a8d;--ocean:#2e86ff;--grape:#7d4fe8;--orange:#ff9b3d;--mint:#7fdcc1}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:90px}
+body{margin:0;font-family:"NunitoE","Nunito","Segoe UI",Arial,sans-serif;background:linear-gradient(180deg,#e7ecff 0,#f3fbff 45%,#fff4e6 100%);background-attachment:fixed;color:var(--ink);font-size:19px;line-height:1.4;overflow-x:hidden;min-height:100vh}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button:focus-visible{outline:4px solid #ffb703;outline-offset:2px}
+img{max-width:100%;height:auto}
+h1,h2,h3{margin:.15em 0;line-height:1.15}
+.wrap{max-width:820px;margin:0 auto;padding:10px 12px 60px}
+.muted{color:#5d6a85;font-size:16px}
+.center{text-align:center}
+/* top bar */
+#bar{position:sticky;top:0;z-index:30;background:#ffffffee;backdrop-filter:blur(6px);border-radius:0 0 22px 22px;padding:6px 10px;box-shadow:0 4px 14px #0002}
+#bar .in{display:flex;align-items:center;gap:8px;max-width:820px;margin:0 auto}
+#home{border:0;background:#e4f4ff;border-radius:16px;min-height:48px;padding:4px 12px;font-weight:900;font-size:18px}
+#bar .t{flex:1;min-width:0;font-weight:900;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{background:#fff6d6;border:2px solid #ffe08a;border-radius:16px;padding:2px 10px;font-weight:900;font-size:18px;white-space:nowrap;min-height:40px;display:flex;align-items:center;gap:4px}
+.pill.pop{animation:pop .6s}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.45)}100%{transform:scale(1)}}
+#voice{border:2px solid #cfe0f5;background:#fff;border-radius:16px;min-height:40px;min-width:48px;font-size:20px}
+#voice[aria-pressed=false]{opacity:.55}
+/* cards, buttons */
+.card{background:#fff;border-radius:26px;padding:14px 16px;margin:12px 0;box-shadow:0 5px 18px #2a4a7a1f}
+.btn{border:0;border-radius:22px;padding:12px 22px;min-height:58px;font-weight:900;font-size:22px;background:var(--ocean);color:#fff;box-shadow:0 5px 0 #1b5fb5;transition:transform .1s}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #1b5fb5}
+.btn.g{background:var(--leaf);box-shadow:0 5px 0 var(--leaf2)}
+.btn.o{background:var(--orange);box-shadow:0 5px 0 #c96b12}
+.btn.soft{background:#eef4fb;color:var(--ink);box-shadow:0 5px 0 #c9d6e6}
+.btn[disabled]{opacity:.45}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+/* mascot + speech bubble */
+.guide{display:flex;align-items:center;gap:6px;margin:6px 0}
+.guide img{width:42%;max-width:190px;flex:none;filter:drop-shadow(0 6px 6px #0002)}
+.bub{position:relative;background:#fff;border:3px solid #bfe3d6;border-radius:22px;padding:10px 14px;font-weight:800;font-size:21px;flex:1;min-width:0}
+.bub:before{content:"";position:absolute;left:-14px;top:50%;margin-top:-10px;border:10px solid transparent;border-right:14px solid #bfe3d6;border-left:0}
+.bub.oops{border-color:#ffc58f;background:#fff8ef}.bub.oops:before{border-right-color:#ffc58f}
+.bub.hint{border-color:#c8b6ff;background:#f7f3ff}.bub.hint:before{border-right-color:#c8b6ff}
+.bub.good{border-color:#9be3b8;background:#f0fff5}.bub.good:before{border-right-color:#9be3b8}
+.guide.small img{width:30%;max-width:130px}
+.guide.small .bub{font-size:19px}
+.jump img{animation:jump .7s ease}
+@keyframes jump{0%,100%{transform:translateY(0)}30%{transform:translateY(-22px) rotate(-4deg)}60%{transform:translateY(0)}80%{transform:translateY(-8px)}}
+.shake{animation:shake .45s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-5px)}}
+/* map */
+.hero h1{font-size:30px;text-align:center}
+.hero .sub{text-align:center;font-weight:800;color:#5d6a85}
+.map{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:620px){.map{grid-template-columns:1fr 1fr}}
+.stc{display:flex;align-items:center;gap:12px;border:0;text-align:left;background:#fff;border-radius:24px;padding:12px 14px;box-shadow:0 5px 0 var(--c,#ccd),0 8px 18px #0001;min-height:96px;width:100%}
+.stc .ic{font-size:44px;width:70px;height:70px;border-radius:50%;background:var(--bg,#fff3d6);display:flex;align-items:center;justify-content:center;flex:none}
+.stc .nm{font-weight:900;font-size:21px}
+.stc .st{font-size:22px;letter-spacing:2px}
+.stc.lock{opacity:.55;filter:grayscale(.6)}
+.stc.next{animation:glowp 1.6s infinite}
+@keyframes glowp{0%,100%{box-shadow:0 5px 0 var(--c),0 0 0 0 #ffd23f}50%{box-shadow:0 5px 0 var(--c),0 0 0 8px #ffd23f88}}
+.stickers{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.stk{width:76px;height:76px;border-radius:50%;border:3px dashed #ccd6e6;display:flex;align-items:center;justify-content:center;font-size:40px;background:#f6f8fc}
+.stk.got{border:3px solid #ffd23f;background:radial-gradient(#fffbe6,#ffe9a8);animation:pop .6s}
+.stk small{display:none}
+.giftcard{text-align:center}
+.giftbtn{font-size:84px;border:0;background:none;line-height:1}
+.giftbtn.wig{animation:wig 1.2s infinite}
+@keyframes wig{0%,100%{transform:rotate(0)}10%{transform:rotate(-10deg)}20%{transform:rotate(10deg)}30%{transform:rotate(-6deg)}40%{transform:rotate(0)}}
+/* station */
+.steps{display:flex;gap:6px;justify-content:center;margin:4px 0 2px}
+.steps span{flex:1;max-width:150px;text-align:center;border-radius:14px;padding:4px 6px;background:#eef2f8;font-weight:800;font-size:15px}
+.steps span.on{background:#ffe08a}.steps span.ok{background:#c8f2d8}
+.sth{display:flex;align-items:center;gap:10px}
+.sth .ic{font-size:40px}
+.sth h2{font-size:26px}
+.lesson .line{display:flex;align-items:center;gap:12px;font-size:21px;font-weight:700;background:#f7f9ff!important;padding:8px 10px;border-radius:16px;margin:4px 0;border:0;background:none;width:100%;text-align:left}
+.lesson .line .e{font-size:32px;flex:none;width:52px;text-align:center}
+.lesson .line.rd{background:#fff3c4!important}
+.actt{font-size:23px;font-weight:900;text-align:center;margin:6px 0}
+.tip{text-align:center;color:#5d6a85;font-size:16px;margin-top:8px}
+/* draggable items + zones */
+.pool{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:6px;min-height:20px}
+.di{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.item{border:3px solid #d5e2f2;background:#fff;border-radius:20px;padding:6px 10px;min-width:96px;min-height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:16px;box-shadow:0 4px 0 #d5e2f2;transition:transform .15s}
+.item .oi{font-size:42px;line-height:1.1}
+.item.sel{border-color:#ffb703;box-shadow:0 0 0 5px #ffd23f88;transform:scale(1.06)}
+.item.drag{opacity:.35}
+.item.placed{display:none}
+.ghost{position:fixed;z-index:99;pointer-events:none;transform:translate(-50%,-50%) scale(1.1) rotate(-4deg);opacity:.95}
+.bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:10px}
+.bins.five{grid-template-columns:repeat(auto-fit,minmax(100px,1fr))}
+.bin{border:4px dashed #b9cbe3;border-radius:22px;background:#f7fbff;min-height:140px;padding:8px;text-align:center;transition:background .15s,transform .15s}
+.bin .bi{font-size:40px;line-height:1.1}
+.bin h4{margin:2px 0;font-size:20px}
+.bin .tray{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;font-size:30px;min-height:36px}
+.over,.dz.over{background:#fff3c4!important;transform:scale(1.04);border-color:#ffb703!important}
+.glow{animation:glw 1s 3}
+@keyframes glw{0%,100%{box-shadow:0 0 0 0 #ffd23f}50%{box-shadow:0 0 0 9px #ffd23faa}}
+.no{animation:shake .45s}
+/* match */
+.mt{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+.mt .col{display:flex;flex-direction:column;gap:10px}
+.mt .item{flex-direction:row;gap:8px;min-height:74px;font-size:20px;justify-content:flex-start;width:100%}
+.mt .item .oi{font-size:38px}
+.mz{border:4px dashed #b9cbe3;border-radius:20px;background:#f7fbff;min-height:74px;display:flex;align-items:center;gap:8px;padding:4px 10px;font-weight:900;font-size:20px}
+.mz .oi{font-size:34px}
+.mz .got{margin-left:auto;font-size:34px}
+.mz.ok,.item.ok{border-style:solid;border-color:#5fd08f;background:#eafff1}
+/* face puzzle */
+.facewrap{position:relative;width:min(88vw,330px);aspect-ratio:1;margin:0 auto}
+.facewrap svg{width:100%;height:100%;display:block}
+.fz{position:absolute;transform:translate(-50%,-50%);border:4px dashed #8aa3c4;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;background:#ffffff55}
+.fz.ok{border-color:transparent;background:none}
+.fz.earL .pe{transform:scaleX(-1);display:inline-block}
+/* torch room */
+.room{position:relative;width:100%;max-width:560px;aspect-ratio:4/3;margin:0 auto;border-radius:22px;overflow:hidden;background:linear-gradient(#f9e6c8 0 64%,#c99a6b 64%);touch-action:none;user-select:none;-webkit-user-select:none}
+.room .win{position:absolute;left:8%;top:8%;width:22%;height:26%;background:#24345e;border:6px solid #fff;border-radius:6px}
+.room .shelf{position:absolute;right:6%;top:30%;width:34%;height:5px;background:#8a5a33;border-radius:3px}
+.room .rug{position:absolute;left:28%;top:74%;width:44%;height:16%;background:#e86a8d;border-radius:50%;opacity:.7}
+.ob{position:absolute;transform:translate(-50%,-50%);border:0;background:none;font-size:clamp(34px,9vw,52px);line-height:1;padding:6px;border-radius:50%;touch-action:none}
+.ob.found{background:#fff8;box-shadow:0 0 0 4px #5fd08f}
+.dark{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at var(--x,50%) var(--y,50%),transparent 0,transparent 62px,rgba(4,8,30,.96) 100px);transition:opacity 1s}
+.dark.off{opacity:0}
+.torchq{text-align:center;font-weight:900;font-size:23px;margin:8px 0}
+/* sounds */
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sbtn{position:relative;border:3px solid #d5e2f2;background:#fff;border-radius:22px;min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:16px;box-shadow:0 4px 0 #d5e2f2;overflow:visible}
+.sbtn .oi{font-size:46px}
+.sbtn.heard{border-color:#5fd08f;background:#eafff1}
+.sbtn.heard:after{content:"✔";position:absolute;top:4px;right:8px;color:#1f8f57;font-weight:900}
+.sbtn.play .oi{animation:wob .5s 2}
+@keyframes wob{0%,100%{transform:rotate(0) scale(1)}25%{transform:rotate(-12deg) scale(1.15)}75%{transform:rotate(12deg) scale(1.15)}}
+.ring{position:absolute;left:50%;top:40%;width:60px;height:60px;margin:-30px;border:4px solid #2e86ff;border-radius:50%;animation:ring 1s ease-out forwards;pointer-events:none}
+@keyframes ring{from{transform:scale(.6);opacity:1}to{transform:scale(2.2);opacity:0}}
+.meter{height:16px;background:#e3ebf4;border-radius:10px;overflow:hidden;margin:10px 0}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--leaf),var(--sun));transition:width .4s}
+/* reaction face (taste/smell) */
+.react{display:flex;align-items:center;justify-content:center;gap:10px;font-weight:900;font-size:22px;min-height:84px}
+.react .fe{font-size:64px;line-height:1;transition:transform .3s}
+.react .fe.bump{animation:pop .6s}
+/* riddle */
+.bag{font-size:92px;border:0;background:none;line-height:1;display:block;margin:0 auto}
+.bag.feel{animation:wig .9s 1}
+.clue{text-align:center;font-size:25px;font-weight:900;min-height:40px;margin:6px 0}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:460px;margin:8px auto 0}
+.opt{border:3px solid #d5e2f2;background:#fff;border-radius:20px;min-height:100px;font-weight:800;font-size:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 4px 0 #d5e2f2}
+.opt .oi{font-size:46px}
+.opt.right{border-color:#5fd08f;background:#eafff1}
+/* modal */
+.ov{position:fixed;inset:0;z-index:60;background:#1b2440aa;display:flex;align-items:center;justify-content:center;padding:14px}
+.ov .box{background:#fff;border-radius:28px;max-width:520px;width:100%;max-height:92vh;overflow:auto;padding:16px;text-align:center;animation:popin .4s}
+@keyframes popin{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.ov .box img.mas{width:62%;max-width:260px}
+.bigstk{font-size:90px;animation:spin 1s}
+@keyframes spin{from{transform:rotate(-200deg) scale(.2)}to{transform:rotate(0) scale(1)}}
+/* flying star */
+.fly{position:fixed;z-index:80;font-size:44px;pointer-events:none;transition:transform .9s cubic-bezier(.5,-.3,.7,1),opacity .9s}
+#cf{position:fixed;inset:0;pointer-events:none;z-index:90}
+/* badge + certificate */
+.badge{width:230px;height:230px;margin:6px auto;border-radius:50%;background:radial-gradient(circle,#fff7cf 0 55%,#ffd23f 56% 64%,#ff9b3d 65% 72%,#7d4fe8 73%);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 22px #0003;animation:spin 1.1s}
+.badge .t{font-weight:1000;font-size:21px;line-height:1.05;color:#4a2a9a}
+.badge .e{font-size:28px;letter-spacing:2px}
+.cert{border:8px double #ffb703;border-radius:26px;background:linear-gradient(#fffdf3,#fff4d6);text-align:center;padding:16px}
+.cert .nm{font-size:44px;font-weight:1000;color:#7d4fe8;margin:4px 0}
+.cert img{width:55%;max-width:240px}
+.foot{text-align:center;margin-top:24px}
+.foot button{border:0;background:none;color:#7a86a0;text-decoration:underline;font-size:15px;min-height:40px}
+@media(min-width:700px){body{font-size:20px}.lesson .line{font-size:23px}.guide img{max-width:210px}}
+@media print{#bar,.foot,.row,.noprint{display:none!important}body{background:#fff}.cert{break-inside:avoid}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;font-weight:900;margin:0 2px}
+.fr b{display:block;padding:0 3px 2px;border-bottom:2.5px solid currentColor}
+.fr i{display:block;font-style:normal;padding:2px 3px 0}
+.big .fr,.big.fr{font-size:1.35em}
+.lesson .line{border:2px solid #e3e9f6!important;margin:6px 0!important}
+.say{border:2px solid #cfe0f5;background:#fff;border-radius:14px;min-height:40px;min-width:44px;font-size:18px;vertical-align:middle}
+.task{text-align:center;font-weight:900;font-size:22px;margin:8px 0}
+.artbox{max-width:300px;margin:6px auto}
+.artbox.wide{max-width:520px}
+.art{width:100%;height:auto;display:block}
+.art .pc{cursor:pointer;transition:fill .15s}
+.cutbar{display:flex;align-items:center;justify-content:center;gap:12px;margin:8px 0}
+.rb{width:58px;height:58px;border-radius:50%;border:0;background:var(--grape);color:#fff;font-size:32px;font-weight:900;box-shadow:0 4px 0 #4f2ca8}
+.cutn{display:flex;flex-direction:column;align-items:center;font-weight:800;font-size:15px;min-width:110px}
+.cutn b{font-size:34px;line-height:1.1}
+.btn.sm{min-height:48px;font-size:18px;padding:8px 16px}
+.shp{width:64px;height:64px;display:block}
+.item .oi .shp{width:64px;height:64px}
+.mini .shp{width:30px;height:30px;display:inline-block}
+.qn{font-size:21px;font-weight:800;text-align:center;margin:6px 0}
+.ans{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 0;flex-wrap:wrap}
+.fin{display:inline-flex;flex-direction:column;align-items:center;gap:4px}
+.fin i{display:block;width:70px;height:4px;background:var(--ink);border-radius:2px}
+.fin input,.ni,.mi{width:70px;height:56px;font:inherit;font-size:28px;font-weight:900;text-align:center;border:3px solid #b9cbe3;border-radius:14px;background:#fff;color:var(--ink)}
+.ni{width:96px}
+.mi{width:58px;height:48px;font-size:24px}
+.fin input:focus,.ni:focus,.mi:focus{outline:none;border-color:var(--ocean);box-shadow:0 0 0 4px #2e86ff33}
+.unit{font-weight:800}
+.eqn{display:flex;align-items:center;justify-content:center;gap:14px;font-size:30px}
+.fr.big2 b,.fr.big2 i{padding:4px 6px;min-width:44px;text-align:center}
+.eq{font-weight:900;font-size:34px}
+.livebars{max-width:420px;margin:8px auto 0;display:flex;flex-direction:column;gap:6px;width:100%}
+.ghostbar{height:44px;border:3px dashed #b9cbe3;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#8a99b5;font-weight:900}
+.opts{display:grid;grid-template-columns:1fr;gap:10px;max-width:420px;margin:0 auto;width:100%}
+.opt{border:3px solid #d5e2f2;background:#fff;border-radius:18px;min-height:58px;font-weight:800;font-size:20px;box-shadow:0 4px 0 #d5e2f2}
+.opt.right{border-color:#5fd08f;background:#eafff1}
+/* share */
+.laddus{gap:8px}
+.ld,.lp{width:40px;height:40px;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,#ffe08a,#f2a516 60%,#c97b06);box-shadow:inset -3px -4px 0 #b86d00,0 2px 0 #0002;padding:0}
+.ld.sel{box-shadow:0 0 0 5px #7d4fe8aa}
+.ld.drag{opacity:.3}
+.lp{width:30px;height:30px;display:inline-block}
+.back{border:2px solid #d9e2ef;background:#fff;border-radius:12px;font-size:14px;font-weight:800;min-height:36px;padding:2px 10px;margin-top:4px}
+.plates{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+@media(min-width:620px){.plates{grid-template-columns:repeat(4,1fr)}}
+.plate{border:4px solid #d9e2ef;border-radius:50%/40%;background:radial-gradient(#fff,#eef3fa);min-height:130px;padding:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .15s}
+.plate .tray{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;min-height:30px}
+.pn{font-size:15px;font-weight:800;margin-top:4px}
+/* colour set */
+.setg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:420px;margin:8px auto}
+.si{font-size:34px;min-height:62px;border:3px solid #e1e8f3;border-radius:16px;background:#fff;filter:grayscale(1);opacity:.55;transition:all .15s}
+.si.on{filter:none;opacity:1;border-color:#7d4fe8;background:#f3eeff;transform:scale(1.06)}
+.si[data-g="0"]{box-shadow:0 0 0 3px #ffb703}.si[data-g="1"]{box-shadow:0 0 0 3px #2e86ff}
+/* wall */
+.wall{display:flex;flex-direction:column;gap:5px}
+.wrow{display:flex;gap:6px;align-items:stretch}
+.wl{flex:none;width:68px;min-height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px}
+.wl.dz{border:3px dashed #8aa3c4;background:#f5f8fd;font-size:20px;color:#8aa3c4}
+.wl.ok{background:#e9f6ff;border:3px solid #2e86ff;color:var(--ink)}
+.wt{flex:1;display:flex;min-width:0}
+.tile{flex:1;min-width:0;border:2px solid #fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;min-height:46px;cursor:pointer;color:#fff}
+.wrow:nth-child(1) .tile{background:#24406e}.wrow:nth-child(2) .tile{background:#ef6b4a}.wrow:nth-child(3) .tile{background:#ff9b3d}.wrow:nth-child(4) .tile{background:#e3b505}.wrow:nth-child(5) .tile{background:#2fb872}.wrow:nth-child(6) .tile{background:#2e86ff}.wrow:nth-child(7) .tile{background:#7d4fe8}
+.tile.hl{outline:4px solid #ffd23f;outline-offset:-4px}
+.chip{min-width:70px;min-height:70px;font-size:22px}
+/* signs */
+.cmp{display:flex;flex-direction:column;gap:10px;max-width:460px;margin:0 auto}
+.cp{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:16px;font-size:28px;background:#f7f9ff;border-radius:18px;padding:8px}
+.sg{width:64px;height:58px;border-radius:16px;border:3px solid #7d4fe8;background:#fff;font-size:30px;font-weight:900}
+.sg.bad{border-color:#ef6b4a;background:#fff2ee}
+.proof{flex-basis:100%;display:flex;flex-direction:column;gap:2px;max-width:300px}
+.proof:empty{display:none}
+/* overlay */
+.card2{min-width:0;width:calc(50% - 10px);max-width:180px;gap:4px;min-height:84px}
+.card2 .cf{font-size:24px}
+.card2 svg{width:100%;max-width:140px;height:auto}
+.tgs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.tg{border:4px dashed #b9cbe3;border-radius:18px;padding:8px;background:#f7fbff;text-align:center}
+.tg.ok{border-style:solid;border-color:#5fd08f;background:#eafff1}
+.tl{font-size:22px;margin-bottom:4px}
+.tg .art{max-width:100%}
+.tc{font-size:13px;color:#3a6b4d;font-weight:700}
+/* number line */
+.nlbox{max-width:560px;margin:0 auto}
+.nl{width:100%;height:auto;display:block;touch-action:none;cursor:pointer;user-select:none}
+.pin{transition:transform .08s}
+.certf{font-size:22px;margin:10px 0;font-weight:800;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px}
+.certf span{white-space:nowrap}
+.badge .e .fr{font-size:18px}
+.cert .nm{font-size:46px}
+/* ================= Float or Sink additions ================= */
+body{background:linear-gradient(180deg,#d9f1ff 0,#eefaff 40%,#fff4e6 100%);background-attachment:fixed}
+.hero h1{color:#1565c0;text-shadow:0 3px 0 #bfe3ff}
+.hero3d{margin:8px 0;border-radius:22px;overflow:hidden;min-height:150px;background:linear-gradient(#9ad8ff,#fff1d6)}
+.stage{position:relative;border-radius:22px;overflow:hidden;background:linear-gradient(#8fd3ff,#fff4e0);box-shadow:inset 0 0 0 3px #ffffff88}
+.stage canvas.gl{display:block;width:100%;touch-action:pan-y}
+.sthint{position:absolute;left:8px;bottom:6px;font-size:12px;font-weight:800;color:#27324aaa;background:#ffffffb0;border-radius:10px;padding:1px 8px;pointer-events:none}
+.stwrap{position:relative;margin:8px 0}
+.hud{display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between;margin-top:6px}
+.hud span{background:#fff;border:2px solid #d5e8fb;border-radius:14px;padding:3px 10px;font-weight:900;font-size:16px}
+.hud .read{background:#e8f6ff;border-color:#7cc4ff;font-size:20px;color:#1565c0}
+.loading{text-align:center;padding:40px 10px;font-weight:900;color:#5d6a85;animation:pulse 1s infinite alternate}
+@keyframes pulse{to{opacity:.4}}
+.panel{background:#f7fbff;border:3px solid #d5e8fb;border-radius:22px;padding:10px 12px;margin:10px 0}
+.panel.sub{background:#fffaf0;border-color:#ffe0a3}
+.panel.done,.panel .done{border-color:#7fdcab}
+.q{font-weight:800;font-size:19px;margin-bottom:8px}
+.q .big,.big{font-size:30px;vertical-align:middle}
+.numrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+.num{width:120px;min-height:56px;border:3px solid #9cc7f0;border-radius:16px;font:inherit;font-size:26px;font-weight:900;text-align:center;color:var(--ink);background:#fff}
+.num:focus{outline:none;border-color:#ffb703;box-shadow:0 0 0 4px #ffe08a}
+.num:disabled{background:#eafff1;border-color:#5fd08f}
+.chk{min-height:56px;font-size:20px;padding:8px 18px}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:520px;margin:6px auto 0}
+.opts.col{grid-template-columns:1fr}
+.opt{min-height:62px;font-size:19px;padding:8px 10px;transition:transform .1s}
+.opt:active{transform:translateY(3px)}
+.opt.chosen{border-color:#ffb703;background:#fff6d6}
+.opt.wrong{border-color:#ff8a8a;background:#ffeaea;animation:shake .4s}
+.spark{display:inline-block;background:linear-gradient(90deg,#7d4fe8,#ff6a8d);color:#fff;border-radius:12px;padding:1px 10px;font-size:15px;font-weight:900;box-shadow:0 2px 0 #4b2aa8}
+.nx{display:block;margin:12px auto 0}
+.tray{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0}
+.chip{min-width:0;min-height:0;font-size:15px;font-weight:800;background:#fff;border:2px solid #d5e2f2;border-radius:14px;padding:3px 8px}
+.chip.cur{border-color:#ffb703;background:#fff6d6;animation:pulse .7s infinite alternate}
+.chip.ok{border-color:#5fd08f;background:#eafff1}
+.chip.surp{border-color:#b89cff;background:#f2ecff}
+.sortw .pool{gap:8px}
+.card2{display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px solid #d5e2f2;background:#fff;border-radius:18px;padding:6px;font-weight:800;font-size:16px;box-shadow:0 4px 0 #d5e2f2;width:calc(50% - 8px);max-width:200px;min-height:84px;touch-action:none;user-select:none;-webkit-user-select:none}
+.card2 .e{font-size:30px;line-height:1}
+.card2.sel{border-color:#ffb703;background:#fff6d6;transform:scale(1.04)}
+.card2.drag{opacity:.35}
+.card2.placed{width:auto;max-width:none;min-height:0;font-size:13px;box-shadow:none;padding:3px 6px;margin:3px;display:inline-flex;flex-direction:row;gap:4px;border-color:#5fd08f;background:#eafff1}
+.card2.placed .e{font-size:18px}
+.bins.b3{grid-template-columns:repeat(3,1fr)}
+.bins.b2{grid-template-columns:repeat(2,1fr)}
+.bin{min-height:130px}
+.bin .bt{font-weight:900;font-size:18px;margin-bottom:4px}
+.bin .bi{font-size:inherit;display:flex;flex-wrap:wrap;justify-content:center}
+@media(max-width:480px){.bins.b3 .bt{font-size:14px}.bins.b3{gap:6px}.bins.b3 .bin{padding:4px}}
+.ordw{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:8px 0}
+.ocard{border:3px solid #d5e2f2;background:#fff;border-radius:18px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:15px;font-weight:700;box-shadow:0 4px 0 #d5e2f2}
+.ocard .e{font-size:34px}.ocard b{font-size:18px}
+.ocard .cb{font-size:11px;letter-spacing:-2px}
+.ocard.placed{border-color:#5fd08f;background:#eafff1;opacity:.9}
+.ocard .rk{font-weight:900;color:#1f8f57}
+.olist{font-weight:900;text-align:center}
+.tag{display:inline-block;background:#eafff1;border:2px solid #5fd08f;border-radius:12px;padding:1px 8px;margin:2px}
+.rng{width:100%;height:44px;accent-color:#2e86ff;margin:4px 0}
+.rng.salt{accent-color:#ff6a8d}.rng.sea{accent-color:#1565c0}
+.calc{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:16px}
+.calc span{background:#fff;border:2px solid #d5e8fb;border-radius:12px;padding:3px 10px}
+.shapes{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.shapes .shp{width:auto;height:auto;display:flex;flex-direction:column;align-items:center;border:3px solid #d5e2f2;background:#fff;border-radius:16px;padding:4px 2px;font-weight:800;font-size:13px;min-height:78px;justify-content:center;box-shadow:0 3px 0 #d5e2f2}
+.shapes .shp .e{font-size:26px}
+.shapes .shp.on{border-color:#ff9b3d;background:#fff0dd;transform:translateY(-2px)}
+.shapes .shp.fl{box-shadow:0 3px 0 #5fd08f}.shapes .shp.sk{box-shadow:0 3px 0 #ff8a8a}
+.var{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;background:#fff;border:2px solid #d5e8fb;border-radius:16px;padding:6px 10px;margin:6px 0;font-weight:800}
+.var .tg{display:flex;gap:6px;border:0;padding:0;background:none}
+.var .t{border:2px solid #cfdcef;background:#f6f9ff;border-radius:14px;min-height:46px;padding:4px 10px;font-weight:800;font-size:16px}
+.var .t.on[data-v="1"]{background:#fff0dd;border-color:#ff9b3d}
+.var .t.on[data-v="0"]{background:#e2f0ff;border-color:#2e86ff}
+.tasks{font-weight:800;padding-left:22px}
+.tasks li{margin:4px 0;opacity:.6}
+.tasks li.on{opacity:1;color:#1565c0}
+.tasks li.ok{opacity:1;color:#1f8f57;text-decoration:line-through}
+.tasks li.ok::marker{content:'✅ '}
+.tblw{overflow-x:auto}
+.tbl{border-collapse:collapse;margin:6px auto;font-weight:800;font-size:15px}
+.tbl th,.tbl td{border:2px solid #d5e8fb;padding:5px 7px;text-align:center;background:#fff}
+.tbl th{background:#e2f0ff}.tbl td.fl{background:#eafff1}.tbl td.sk{background:#ffeaea}
+.qprog{display:flex;gap:6px;justify-content:center;margin:6px 0}
+.qprog span{width:34px;height:34px;border-radius:50%;background:#eef4fb;display:flex;align-items:center;justify-content:center;font-weight:900}
+.qprog span.on{background:#ffb703;color:#fff}.qprog span.ok{background:#fff6d6}
+.pics{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pics .pic{width:100%;max-width:420px;border-radius:22px;box-shadow:0 6px 16px #2a4a7a22;animation:float 4s ease-in-out infinite}
+.pics .pic+.pic{max-width:200px;width:calc(50% - 4px)}
+@media(min-width:620px){.pics .pic+.pic{max-width:260px}}
+@keyframes float{50%{transform:translateY(-6px)}}
+.skills{font-size:14px;color:#5d6a85;font-weight:700;text-align:center;margin-top:8px}
+.sth{background:var(--bg,#eef4fb);border-radius:18px;padding:4px 10px}
+.sth h2{color:var(--c,#27324a)}
+/* sea map */
+.seamap{position:relative;margin:14px 0;border-radius:30px;background:linear-gradient(180deg,#4fc3f7 0,#1e88e5 60%,#1565c0 100%);box-shadow:inset 0 0 0 4px #ffffff55,0 6px 20px #1565c044;overflow:hidden}
+.seamap .path{position:absolute;inset:0;width:100%;height:100%;opacity:.8}
+.seamap .waves{position:absolute;inset:0;background:radial-gradient(circle at 20% 10%,#ffffff33 0 6px,transparent 7px) 0 0/70px 50px,radial-gradient(circle at 70% 60%,#ffffff22 0 4px,transparent 5px) 0 0/90px 70px;animation:drift 12s linear infinite;pointer-events:none}
+@keyframes drift{to{background-position:140px 50px,-180px 70px}}
+.isl{position:absolute;transform:translate(-50%,-50%);width:min(46%,250px);border:0;border-radius:40px 34px 44px 30px;background:radial-gradient(ellipse at 50% 120%,#f3d38b 0 55%,#e9b45a 56% 100%);padding:8px 10px 8px 8px;display:flex;align-items:center;gap:6px;text-align:left;box-shadow:0 8px 0 #c58b2f,0 12px 18px #0b3a7a66;color:var(--ink)}
+.isl .ic{font-size:34px;width:52px;height:52px;flex:none;border-radius:50%;background:var(--bg);border:3px solid var(--c);display:flex;align-items:center;justify-content:center}
+.isl .tx{display:flex;flex-direction:column;min-width:0}
+.isl .mn{font-size:12px;font-weight:900;color:#7a5a20}
+.isl .nm{font-size:15px;font-weight:900;line-height:1.1}
+.isl .st{font-size:13px}
+.isl.lock{filter:grayscale(.7);opacity:.75}
+.isl.next{animation:glowp 1.4s infinite}
+.isl.done{background:radial-gradient(ellipse at 50% 120%,#c8f2b0 0 55%,#8fd36a 56% 100%);box-shadow:0 8px 0 #5aa13a,0 12px 18px #0b3a7a66}
+.isl .boat{position:absolute;right:-14px;top:-22px;font-size:32px;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px) rotate(-6deg)}}
+.stk{flex-direction:column;font-size:36px}
+.stk small{font-size:9px;font-weight:900;line-height:1;text-align:center;max-width:70px}
+.credit{text-align:center;font-size:12px;color:#5d6a85;margin:18px auto 30px;max-width:760px;padding:0 12px}
+.credit a{color:#2e6fbf}
+.stage[data-mode="2d"] .sthint{background:#fff3c4}
+</style></head><body>
+<header id="bar"><div class="in"><button id="home" type="button" aria-label="Map">🗺️</button><div class="t">Float or Sink Quest</div>
+<span class="pill" id="pStars" title="Stars">⭐<b>0</b></span><span class="pill" id="pStk" title="Badges">🏅<b>0</b></span>
+<button id="voice" type="button" aria-pressed="true" aria-label="Voice on or off">🔊</button></div></header>
+<main class="wrap" id="app"></main>
+<footer class="credit">Skills adapted from the <a href="https://github.com/withmarbleapp/os-taxonomy" target="_blank" rel="noopener">Marble Skill Taxonomy (v1)</a> · © Generative Spark, Inc. (Marble) · <a href="https://withmarble.com" target="_blank" rel="noopener">withmarble.com</a> · ODbL 1.0 (database) and CC BY-SA 4.0 (content).<br><details><summary>Marble topics used</summary>Describing Material Properties (M1) · Grouping Materials (M1) · Changing Your Mind with Evidence (M1, M7) · Measuring mass and weight (age 4+) (M1, M2) · Estimating volume (M2) · Measuring Liquids & Masses (M2, M4) · Material Properties Vocabulary (M2) · Forces Vocabulary (M3) · Force & Motion Vocabulary (M3, M6) · Fair testing (M3, M5) · Fair testing (age 8+) (M3, M6) · Comparing Capacity (M4) · Drawing conclusions from evidence (M4, M5) · Fair testing (age 9+) (M5, M7) · Ice & Snow (M5) · Testing Materials for Uses (M6) · Exploring the Ocean (M6) · Compound Units (JEE sparks (stretch))</details>3D made with three.js (MIT).</footer>
+<script type="module">'use strict';
+/* ===== Sashtika's Float or Sink Quest (Class 4 Science, JEE-foundation) ===== */
+const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const NAME='Sashtika';
+const M={teach:'alien_teach',cheer:'alien_cheer',think:'owl_think',party:'owl_celebrate',oops:'fox_oops',fox:'fox_cheer'};
+const WHO={alien_teach:'Zippy',alien_cheer:'Zippy',owl_think:'Professor Owl',owl_celebrate:'Professor Owl',fox_oops:'Detective Fox',fox_cheer:'Detective Fox',archimedes:'Archimedes',sub:'Subby the submarine',egg:'Eggy',ship:'Captain Cargo',alien_boat:'Zippy in a clay boat',fish:'Finn the fish',logcoin:'Logan the log and Penny the coin',fox_tank:'Detective Fox at the water tank'};
+const mimg=(m,cls)=>`<img src="assets/${m}.webp" alt="${WHO[m]||m}" width="640" height="360" class="${cls||''}" decoding="async">`;
+function shuffle(a,seed){a=a.slice();let s=seed||7;for(let i=a.length-1;i>0;i--){s=(s*9301+49297)%233280;const j=Math.floor(s/233280*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const WATER=10; /* one cube of water weighs 10 g in our cube puzzles */
+/* object catalogue: real densities (g per cm3), sizes in cm */
+const OBJ={
+ wood:{look:'block',shape:'box',w:6,h:4,d:4,rho:.6,emo:'🪵',name:'Wooden block',why:'Wood is full of tiny air spaces. It is light for its size, so it floats.'},
+ key:{look:'key',shape:'box',w:5,h:.6,d:2,rho:7.8,emo:'🔑',name:'Steel key',why:'Steel is packed very tightly. It is heavy for its size, so it sinks.'},
+ ball:{look:'ball',shape:'sphere',r:3,rho:.08,emo:'🏐',name:'Plastic ball',why:'The ball is big but full of air. Very light for its size: it floats high.'},
+ stone:{look:'stone',shape:'sphere',r:2.2,rho:2.6,emo:'🪨',name:'Stone',why:'Stone is heavy for its size. It sinks, even a small one.'},
+ apple:{look:'apple',shape:'sphere',r:3.2,rho:.82,emo:'🍎',name:'Apple',why:'Surprise for many! An apple is about one quarter air, so it floats.'},
+ coin:{look:'coin',shape:'cylV',r:1.3,h:.25,rho:8,emo:'🪙',name:'Coin',why:'A coin is tiny and light, but metal is tightly packed. It sinks.'},
+ candle:{look:'candle',shape:'cylV',r:1,h:7,rho:.9,emo:'🕯️',name:'Wax candle',why:'Wax is a little lighter than water for its size, so it floats, low in the water.'},
+ ice:{look:'ice',shape:'box',w:3.5,h:3.5,d:3.5,rho:.92,emo:'🧊',name:'Ice cube',why:'Ice is slightly lighter than water for its size. It floats, but most of it stays under water!'},
+ log:{look:'log',shape:'cylH',r:3.6,L:16,m:390,emo:'🪵',name:'BIG log (390 g)',face:true,why:'The log is 78 times heavier than the coin, but it is light for its SIZE. It floats!'},
+ coin2:{look:'coin',shape:'cylV',r:1.3,h:.12,m:5,emo:'🪙',name:'Tiny coin (5 g)',why:'Only 5 grams, but metal is tightly packed. It sinks to the bottom!'},
+ bowl:{look:'hull',shape:'hull',w:8,d:8,h:3,m:120,col:0xb8c2cc,emo:'🥣',name:'Steel bowl (120 g)',why:'A bowl shape holds lots of air. It pushes aside a lot of water, so even steel floats!'},
+ sball:{look:'marble',shape:'sphere',r:1.5,rho:7.8,col:0x9aa3ad,emo:'⚙️',name:'Steel ball bearing',why:'Solid steel, no air inside. It sinks straight down.'},
+ orange:{look:'orange',shape:'sphere',r:3.4,rho:.85,emo:'🍊',name:'Orange WITH peel',why:'The peel is full of tiny air pockets, like a life jacket! It floats.'},
+ peeled:{look:'orange',shape:'sphere',r:3,rho:1.05,peeled:true,emo:'🍊',name:'Orange WITHOUT peel',why:'Without its air-filled peel, the orange is heavier than water for its size. It sinks!'}
+};
+function mk(k,extra){const o=Object.assign({},OBJ[k],extra||{});const V=bodyV(o);if(o.m==null)o.m=+(o.rho*V).toFixed(1);return o}
+
+const STATIONS=[
+{id:1,icon:'🛟',title:'Float or Sink?',c:'#2e86ff',bg:'#e2f0ff',sticker:['🛟','Splash Scientist'],img:'logcoin',
+ skills:'Describing & grouping materials · Changing your mind with evidence',
+ lesson:[['🛟','Some things FLOAT: they stay up at the top of the water.'],['⚓','Some things SINK: they go down to the bottom.'],['🔬','A scientist first PREDICTS (makes a smart guess), then TESTS, then looks at the evidence.'],['😲','A big heavy log floats, but a tiny coin sinks! So it is NOT just about weight.'],['💡','When a test surprises you, that is great! Change your mind to match the evidence.']],
+ acts:[
+  {type:'predict',title:'Predict, then drop it in!',intro:'Look at each object. Predict: will it float or sink? Then watch it drop into the 3D water tank.',items:['wood','key','ball','stone','apple','coin','candle','ice'],win:'You tested 8 objects like a real scientist!'},
+  {type:'sort',title:'Floaters and Sinkers',intro:'Drag each thing into the right box: Floaters or Sinkers. You can also tap a card, then tap a box.',
+   bins:[['f','🛟 Floaters'],['s','⚓ Sinkers']],
+   items:[['🍾','Cork','f'],['🔮','Glass marble','s'],['🦆','Rubber duck','f'],['📌','Iron nail','s'],['🍂','Dry leaf','f'],['🥄','Steel spoon','s'],['✏️','Wooden pencil','f'],['🥥','Coconut','f'],['🧱','Brick','s'],['🧽','Dry sponge','f']],
+   hint:'Things made of metal, stone or glass usually sink. Wood, cork, plastic with air, and things full of air float.',win:'Perfect sorting!'},
+  {type:'predict',title:'Big log versus tiny coin',intro:'The log weighs 390 grams. The coin weighs only 5 grams. Which one will float?',items:['log','coin2'],slots:[-3,9],
+   then:{q:'So what decides if something floats or sinks?',opts:['How heavy it is','How big it is','How heavy it is FOR its size'],ans:2,hint:'The heavy log floated and the light coin sank. So weight alone cannot be the answer!'},
+   win:'Yes! It is how heavy something is for its size. Scientists call this DENSITY.'}]},
+{id:2,icon:'🧊',title:'How Packed Is It?',c:'#2fb872',bg:'#e2f8ea',sticker:['🧊','Cube Counter'],img:'fox_tank',
+ skills:'Volume with unit cubes · Measuring mass · Density vocabulary',
+ lesson:[['🧊','Let us build things from equal cubes. More cubes = bigger size (volume).'],['💧','Our rule: ONE cube of water weighs 10 grams.'],['➗','Grams in each cube = total grams ÷ number of cubes. This tells how PACKED a block is.'],['🛟','Less than 10 grams per cube: lighter than water, so it FLOATS.'],['⚓','More than 10 grams per cube: heavier than water, so it SINKS.'],['🧠','Grown-up word: DENSITY = how much mass is packed into each bit of space.']],
+ acts:[
+  {type:'cubes',title:'Cube detective',intro:'Turn the 3D block to count its cubes. Find the grams in each cube. Then predict and drop it!',
+   rounds:[{nx:2,ny:1,nz:2,m:24,col:0xd9a55a,col2:0xc98d4a,name:'Wood block'},{nx:3,ny:2,nz:1,m:120,col:0xd0573b,col2:0xb8452e,name:'Clay brick'},{nx:2,ny:2,nz:2,m:72,col:0xffe6a8,col2:0xffd780,name:'Wax block'},{nx:5,ny:1,nz:1,m:60,col:0x9aa3ad,col2:0x8790a0,name:'Mystery bar'}],
+   win:'You can predict float or sink using numbers. That is real JEE-style thinking!'},
+  {type:'order',title:'Most packed to least packed',intro:'Work out the grams per cube for each block. Tap them in order: MOST packed first.',
+   items:[['🥇','Gold bar',4,760],['⚙️','Iron block',3,240],['🧱','Brick',5,100],['🪵','Wood plank',6,36],['☁️','Foam block',10,10]],win:'Gold 190, iron 80, brick 20, wood 6, foam 1 grams per cube. Only wood and foam float!'},
+  {type:'build',title:'Rescue float for Robo',intro:'Robo the toy robot weighs 60 g and sinks. Each foam cube weighs 1 g. Find the SMALLEST number of foam cubes that makes Robo float.',robo:60,foam:1,ans:7,win:'7 cubes! They push aside 70 g of water, more than the 67 g total weight.'},
+  {type:'quiz',title:'JEE spark: cube puzzles',intro:'Challenge time! Think step by step. Use our rule: a cube of water weighs 10 g.',bonus:true,
+   rounds:[{q:'A block of 5 cubes weighs 45 g. How many grams are in each cube?',kind:'num',ans:9,unit:'g per cube',hint:'Share 45 grams equally among 5 cubes: 45 ÷ 5.'},
+    {q:'A raft is made of 10 wooden cubes. Each wooden cube weighs 6 g. What is the HEAVIEST cargo it can carry before it starts to sink?',kind:'num',ans:40,unit:'g',hint:'10 cubes can push aside 10 × 10 = 100 g of water. The raft itself is 10 × 6 = 60 g. What is left?',spark:true},
+    {q:'Block A: 4 cubes weighing 20 g. Block B: 6 cubes weighing 36 g. Which block is MORE packed?',kind:'mcq',opts:['Block A','Block B','Both the same'],ans:1,hint:'A: 20 ÷ 4 = 5 g per cube. B: 36 ÷ 6 = ? g per cube.'}],
+   win:'Brilliant! You compared how packed things are with division.'}]},
+{id:3,icon:'🚣',title:'Shape Magic: The Clay Boat',c:'#ff9b3d',bg:'#fff0dd',sticker:['🚣','Boat Builder'],img:'alien_boat',
+ skills:'Forces: weight and upthrust · Balanced forces · Fair testing a prototype',
+ lesson:[['⬇️','WEIGHT is the force that pulls things DOWN (gravity).'],['⬆️','Water pushes UP on things. This push is called UPTHRUST.'],['⚖️','If upthrust can grow as big as the weight, the forces balance and the thing floats.'],['🟠','A clay ball sinks. But the SAME clay shaped into a boat floats!'],['🚢','A boat shape pushes aside lots of water, so it gets a big upthrust. That is how steel ships float.']],
+ acts:[
+  {type:'clay',title:'Shape the clay',intro:'You have 90 g of clay. Choose a shape, then drop it in. Blue arrow = upthrust, red arrow = weight. Test all 5 shapes!',win:'Same clay, same weight: only the SHAPE changed, and that changed everything!'},
+  {type:'sort',title:'Arrow lab: what will happen?',intro:'Each card shows the push UP (upthrust) and the pull DOWN (weight) on something in water. Drag it to what happens.',
+   bins:[['u','⬆️ Moves up'],['b','⚖️ Stays still (balanced)'],['d','⬇️ Moves down']],
+   items:[['🔵','Up 50 g · Down 30 g','u'],['🟢','Up 20 g · Down 20 g','b'],['🔴','Up 10 g · Down 40 g','d'],['🟣','Up 75 g · Down 75 g','b'],['🟠','Up 5 g · Down 60 g','d'],['🟡','Up 90 g · Down 15 g','u']],
+   hint:'Compare the two numbers. The bigger force wins. If they are equal, the forces are balanced.',win:'Upthrust bigger: up. Weight bigger: down. Equal: balanced!'},
+  {type:'fair',title:'Plan a fair test',intro:'A fair test changes only ONE thing and keeps everything else the same. Set each thing to Change or Keep same.',
+   rounds:[{q:'Question: Does the SHAPE of the clay change whether it floats?',vars:[['Shape of the clay',1],['Amount of clay',0],['Kind of water',0],['Size of the tub',0]]},
+    {q:'Question: Does adding SALT help an egg float?',vars:[['The egg',0],['Amount of salt',1],['Amount of water',0],['The glass',0]]}],
+   hint:'Change ONLY the thing in the question. Keep everything else the same.',win:'You planned fair tests like a scientist!'}]},
+{id:4,icon:'🛁',title:'Eureka! Water Rises',c:'#7d4fe8',bg:'#efe8ff',sticker:['👑','Eureka Expert'],img:'archimedes',
+ skills:'Measuring liquids in ml · Volume · Drawing conclusions',
+ lesson:[['🛁','Long ago, Archimedes got into a full bathtub and the water spilled over the sides.'],['💡','He shouted "Eureka!" which means "I found it!"'],['📏','When something goes into water, it pushes water aside. The water level RISES. This is DISPLACEMENT.'],['🧊','A sinking thing pushes aside its own VOLUME: a 40 cm³ stone makes the water rise by 40 ml.'],['🛟','A floating thing pushes aside its own WEIGHT of water: a 60 g floater makes the water rise by 60 ml.'],['👑','Archimedes used this to catch a cheat who made a fake gold crown!']],
+ acts:[
+  {type:'displace',title:'Measuring jar lab',intro:'The jar starts at 300 ml. Drop things in, read the new level, and work out how much the water rose.',
+   rounds:[{o:{look:'stone',shape:'sphere',r:2.1216,m:104,emo:'🪨',name:'Stone'},rise:40,q:'How many ml did the water rise? That is the stone\'s volume in cm³!'},
+    {o:{look:'block',shape:'box',w:5,h:2.5,d:2,m:75,col:0x2e86ff,emo:'🚙',name:'Toy car'},rise:25,q:'How many ml did the water rise this time?'},
+    {o:{look:'block',shape:'box',w:5,h:4,d:5,m:60,col:0xd9a55a,emo:'🪵',name:'Floating wood block (60 g)',face:true},rise:60,q:'The 60 g wood block FLOATS. How many ml did the water rise?',after:{q:'JEE spark: a 45 g toy boat floats in this jar. How many ml will the water rise?',ans:45,hint:'A floater pushes aside its own WEIGHT of water: 1 g of water is 1 ml.'}}],
+   win:'Sinkers push aside their volume. Floaters push aside their weight. Eureka!'},
+  {type:'crown',title:'Archimedes\' crown puzzle',intro:'Both crowns weigh 386 g. Real gold is very tightly packed. Drop both crowns and catch the fake one!',win:'The fake crown pushed aside more water, so it is bigger for the same weight: less packed, not pure gold!'},
+  {type:'quiz',title:'Water level puzzles',intro:'Use what you discovered in the jar.',bonus:true,
+   rounds:[{q:'A stone of 50 cm³ sinks in a jar. By how many ml does the water rise?',kind:'num',ans:50,unit:'ml',hint:'A sinking thing pushes aside its own volume. 1 cm³ = 1 ml.'},
+    {q:'A 30 g cork floats in a jar. By how many ml does the water rise?',kind:'num',ans:30,unit:'ml',hint:'A floater pushes aside its own WEIGHT of water.'},
+    {q:'A jar shows 200 ml. Sashti drops in 4 equal marbles and it shows 240 ml. What is the volume of ONE marble?',kind:'num',ans:10,unit:'cm³',hint:'The 4 marbles together raised it by 240 − 200 = 40 ml. Share that by 4.',spark:true}],
+   win:'You are a displacement detective!'}]},
+{id:5,icon:'🥚',title:'Salty Sea Secrets',c:'#ff6a8d',bg:'#ffe6ee',sticker:['🥚','Salt Wizard'],img:'egg',
+ skills:'Fair testing · Using results to predict · Icebergs and sea ice',
+ lesson:[['🥚','An egg sinks in a glass of tap water.'],['🧂','Stir in salt, spoon by spoon. Salty water is heavier for its size than fresh water.'],['⬆️','Heavier water pushes up harder. With enough salt, the egg FLOATS!'],['🌊','The sea is salty, so ships float a little higher in the sea than in a river.'],['🏖️','The Dead Sea is so salty that people float like corks and can read a book lying on the water!'],['🧊','Icebergs float, but about 9 out of 10 parts hide under the water.']],
+ acts:[
+  {type:'egg',title:'The floating egg experiment',intro:'Slide to add salt one spoon at a time. Find the SMALLEST number of spoons that makes the egg float.',ans:6,win:'With 6 spoons the salty water became strong enough to hold the egg up!'},
+  {type:'twin',title:'Fresh water or Dead Sea?',intro:'Two tanks: fresh water and super-salty Dead Sea water. Predict, then drop!',
+   rounds:[{o:'boat',q:'The same toy boat goes into both tanks. Where will it float HIGHER?',opts:['Fresh water','Dead Sea','Same in both'],ans:1,why:'Salty water pushes up harder, so the boat does not need to sink as deep.'},
+    {o:'egg',q:'An egg goes into both tanks. Where will it float?',opts:['Only in fresh water','Only in the Dead Sea','In both','In neither'],ans:1,why:'The egg is heavier than fresh water for its size, but lighter than the Dead Sea water.'}],win:'You used the egg results to predict new tests!'},
+  {type:'berg',title:'Iceberg mystery',intro:'Guess: if an iceberg has 10 equal layers, how many layers hide UNDER the sea? Then drop it in.',win:'About 9 of 10 parts hide under the sea. That is why ships must be so careful!'},
+  {type:'quiz',title:'Read the results',intro:'Sashti tested an egg with different spoons of salt. Look at her results table and think.',
+   table:[['Spoons of salt','0','2','4','6','8'],['Egg','sank','sank','sank','floated','floated']],
+   rounds:[{q:'What is the best conclusion from her table?',kind:'mcq',opts:['Salt makes the egg lighter','More salt helps the water hold the egg up','Salt makes the egg bigger'],ans:1,hint:'The egg stayed the same. What changed was the water.'},
+    {q:'JEE spark: her egg floats with 6 spoons in one glass of water. How many spoons would she need for TWO glasses of water, to make it just as salty?',kind:'num',ans:12,unit:'spoons',hint:'Double the water needs double the salt to be just as salty.',spark:true}],win:'You drew conclusions from evidence!'}]},
+{id:6,icon:'🚢',title:'Cargo Ships & Submarines',c:'#ffb703',bg:'#fff6d1',sticker:['⚓','Deep Sea Captain'],img:'ship',img2:'sub',
+ skills:'Testing materials & designs · Balanced forces · Exploring the ocean',
+ lesson:[['🚢','A cargo ship can only carry so much. Too much cargo and the water comes over the sides!'],['🟡','Ships have a SAFETY LINE (the Plimsoll line). The water must stay below it.'],['🟨','A submarine floats or sinks on purpose by filling its tanks with water or air.'],['🐟','Fish do it too! A balloon inside them, the SWIM BLADDER, fills with gas to rise or empties to sink.'],['🌊','Scientists explore the deep ocean in submarines. Most of the deep sea is still unexplored!']],
+ acts:[
+  {type:'load',title:'Load the cargo boat',intro:'The boat weighs 100 g and can push aside at most 420 g of water. Each crate weighs 50 g. Load it until... SPLASH!',win:'You found the boat\'s limit and its safe load. Captain level!'},
+  {type:'sub',title:'Submarine pilot',intro:'Use the ballast slider. More water in the tanks = heavier = sinks. Less water = lighter = rises. Complete all 3 missions!',win:'Dive, surface and hover: you can pilot a submarine!'},
+  {type:'sort',title:'Rise or sink?',intro:'Drag each action to what will happen: rise up or sink down.',
+   bins:[['u','⬆️ Rises'],['d','⬇️ Sinks']],
+   items:[['🐟','A fish puffs more gas into its swim bladder','u'],['🟨','A submarine lets water INTO its tanks','d'],['💨','A submarine blows air in and pushes the water out','u'],['🐠','A fish lets gas out of its swim bladder','d'],['🤿','A diver puts on a heavy lead belt','d'],['🏊','A swimmer takes a big deep breath','u'],['🚢','A ship unloads its heavy cargo','u'],['📦','A boat is loaded with more crates','d']],
+   hint:'Ask: does it make the thing heavier for its size, or lighter for its size?',win:'You think like a submarine engineer!'}]},
+{id:7,icon:'🏆',title:'Grand Captain\'s Challenge',c:'#e63946',bg:'#ffe3e5',sticker:['🏆','Buoyancy Captain'],img:'owl_celebrate',final:true,
+ skills:'Using results to predict · Multi-step reasoning',
+ lesson:[['🏆','The final challenge mixes everything you learnt.'],['🧠','Ask: is it heavier or lighter than water FOR ITS SIZE?'],['🛁','Sinkers push aside their volume. Floaters push aside their weight.'],['🚢','Shape can hold air and make even steel float.'],['🔢','Use numbers to prove your answer. Good luck, Captain!']],
+ acts:[
+  {type:'predict',title:'Final predictions',intro:'Four tricky objects. Predict, then test them in the 3D tank!',items:['bowl','sball','orange','peeled'],win:'Even an orange can surprise a scientist!'},
+  {type:'quiz',title:'Captain\'s puzzles',intro:'The last puzzles. Take your time and think like a JEE champion!',bonus:true,
+   rounds:[{q:'A 200 g toy ship floats in a tub. How many grams of water does it push aside?',kind:'num',ans:200,unit:'g',hint:'A floater pushes aside its own weight of water.'},
+    {q:'A jar shows 150 ml. Sashti drops in a 20 cm³ stone (it sinks) and a 30 g cork (it floats). What does the jar show now?',kind:'num',ans:200,unit:'ml',hint:'Stone adds its volume (20 ml). Cork adds its weight (30 ml). 150 + 20 + 30 = ?',spark:true},
+    {q:'A raft has 6 foam cubes. Each foam cube weighs 2 g. A cube of water weighs 10 g. What is the heaviest cargo it can carry?',kind:'num',ans:48,unit:'g',hint:'It can push aside 6 × 10 = 60 g. The raft weighs 6 × 2 = 12 g.',spark:true},
+    {q:'Why does a giant steel ship float when a small steel nail sinks?',kind:'mcq',opts:['The ship is lighter than the nail','The ship\'s hollow shape is full of air, so it pushes aside lots of water','Sea water is magic'],ans:1,hint:'Think of the clay ball and the clay boat.'}],
+   win:'You are a true Buoyancy Captain!'}]}
+];
+/* ---------- state ---------- */
+const KEY='sashtika_floatsink_v1';
+let S={stars:{},done:{},voice:true,gift:false};
+try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(j)S=Object.assign(S,j)}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const nStars=()=>Object.keys(S.stars).length;
+const TOTAL=STATIONS.reduce((a,s)=>a+s.acts.length,0);
+const NST=STATIONS.length;
+const open=n=>n===1||S.done[n-1]||S.all;
+const allDone=()=>STATIONS.every(s=>S.done[s.id]);
+
+/* ---------- sound + speech ---------- */
+let AC=null;
+function ac(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){AC=null}return AC}
+function tone(seq,type){const a=ac();if(!a)return;let t=a.currentTime;seq.forEach(([f,d,v])=>{const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v||.12,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d+.05);t+=d*.8})}
+const snd={ok:()=>tone([[660,.12],[880,.2]]),oops:()=>tone([[330,.16,.08],[294,.22,.08]]),win:()=>tone([[523,.12],[659,.12],[784,.12],[1047,.35]]),pop:()=>tone([[740,.08,.1]]),splash:v=>{const a=ac();if(a)try{noise(a,a.currentTime,.35,700,.5*(v||.5)+.1)}catch(e){}},bloop:()=>tone([[300,.1,.1],[180,.25,.1]],'triangle')};
+function noise(a,t,d,f,v){const b=a.createBuffer(1,Math.floor(a.sampleRate*d),a.sampleRate),x=b.getChannelData(0);for(let i=0;i<x.length;i++)x[i]=(Math.random()*2-1)*(1-i/x.length);const s=a.createBufferSource();s.buffer=b;const fl=a.createBiquadFilter();fl.type='bandpass';fl.frequency.value=f;const g=a.createGain();g.gain.value=v;s.connect(fl);fl.connect(g);g.connect(a.destination);s.start(t)}
+const SFX={
+ drum(a,t){[0,.45].forEach(o=>{const s=a.createOscillator(),g=a.createGain();s.frequency.setValueAtTime(160,t+o);s.frequency.exponentialRampToValueAtTime(45,t+o+.35);g.gain.setValueAtTime(.9,t+o);g.gain.exponentialRampToValueAtTime(.001,t+o+.4);s.connect(g);g.connect(a.destination);s.start(t+o);s.stop(t+o+.45)})},
+ bell(a,t){[0,.6].forEach(o=>[880,1760,2640].forEach((f,i)=>{const s=a.createOscillator(),g=a.createGain();s.frequency.value=f;g.gain.setValueAtTime(.15/(i+1),t+o);g.gain.exponentialRampToValueAtTime(.001,t+o+1);s.connect(g);g.connect(a.destination);s.start(t+o);s.stop(t+o+1)}))},
+ bird(a,t){[0,.18,.36,.7,.88].forEach(o=>{const s=a.createOscillator(),g=a.createGain();s.frequency.setValueAtTime(2200,t+o);s.frequency.exponentialRampToValueAtTime(3600,t+o+.1);g.gain.setValueAtTime(0,t+o);g.gain.linearRampToValueAtTime(.12,t+o+.02);g.gain.exponentialRampToValueAtTime(.001,t+o+.12);s.connect(g);g.connect(a.destination);s.start(t+o);s.stop(t+o+.13)})},
+ clock(a,t){[0,.4,.8,1.2].forEach((o,i)=>{const s=a.createOscillator(),g=a.createGain();s.type='square';s.frequency.value=i%2?1100:1500;g.gain.setValueAtTime(.05,t+o);g.gain.exponentialRampToValueAtTime(.0005,t+o+.03);s.connect(g);g.connect(a.destination);s.start(t+o);s.stop(t+o+.04)})},
+ clap(a,t){[0,.3,.6].forEach(o=>noise(a,t+o,.12,1400,1.4))},
+ horn(a,t){[0,.38].forEach(o=>[400,500].forEach(f=>{const s=a.createOscillator(),g=a.createGain();s.type='square';s.frequency.value=f;g.gain.setValueAtTime(.05,t+o);g.gain.setValueAtTime(.05,t+o+.24);g.gain.exponentialRampToValueAtTime(.001,t+o+.28);s.connect(g);g.connect(a.destination);s.start(t+o);s.stop(t+o+.3)}))}
+};
+function sfx(k){const a=ac();if(a&&SFX[k])try{SFX[k](a,a.currentTime+.02)}catch(e){}}
+const clean=t=>String(t).replace(/<[^>]+>/g,' ').replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu,'').replace(/g\/cm³/g,' grams per cube').replace(/cm³/g,' cubic centimetres').replace(/\s+/g,' ').trim();
+function speak(t,onend){if(!('speechSynthesis' in window)){onend&&onend();return}try{const sy=speechSynthesis;const u=new SpeechSynthesisUtterance(clean(t));u.lang='en-IN';u.rate=.8;u.pitch=1.1;const vs=sy.getVoices?sy.getVoices():[];const v=vs.find(v=>/en[-_]IN/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang));if(v)u.voice=v;if(onend){u.onend=onend;u.onerror=onend}sy.speak(u)}catch(e){onend&&onend()}}
+function say(t,force){if(!force&&!S.voice)return;if('speechSynthesis' in window)try{speechSynthesis.cancel()}catch(e){}speak(t)}
+function hush(){if('speechSynthesis' in window)try{speechSynthesis.cancel()}catch(e){}}
+
+/* ---------- confetti ---------- */
+const CF={p:[],run:false};
+function confetti(n,o){n=n||90;o=o||{};if(!CF.c){CF.c=document.createElement('canvas');CF.c.id='cf';document.body.appendChild(CF.c);CF.x=CF.c.getContext('2d')}
+ const W=CF.c.width=innerWidth,H=CF.c.height=innerHeight,cols=['#ff6a8d','#ffd23f','#2fb872','#2e86ff','#7d4fe8','#ff9b3d','#7fdcc1'];const ox=o.x!=null?o.x:W/2,oy=o.y!=null?o.y:H*.35;
+ for(let i=0;i<n;i++)CF.p.push({x:ox+(Math.random()-.5)*W*(o.x!=null?.1:.5),y:oy,vx:(Math.random()-.5)*13,vy:-Math.random()*13-3,r:Math.random()*7+6,c:cols[i%7],a:Math.random()*6,va:(Math.random()-.5)*.4,l:0,k:i%4});
+ if(!CF.run){CF.run=true;(function loop(){const x=CF.x;x.clearRect(0,0,CF.c.width,CF.c.height);CF.p=CF.p.filter(p=>p.y<H+20&&p.l<190);CF.p.forEach(p=>{p.l++;p.vy+=.28;p.vx*=.99;p.x+=p.vx+Math.sin(p.l/9+p.a)*.6;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.globalAlpha=Math.max(0,1-p.l/190);
+  if(p.k===0)x.fillRect(-p.r/2,-p.r/3,p.r,p.r*.6);else if(p.k===1){x.beginPath();x.arc(0,0,p.r/2.4,0,7);x.fill()}else if(p.k===2){x.beginPath();for(let i=0;i<10;i++){const rr=i%2?p.r*.25:p.r*.6,aa=i*Math.PI/5;x.lineTo(Math.cos(aa)*rr,Math.sin(aa)*rr)}x.fill()}else{x.scale(1,Math.abs(Math.cos(p.l/6)));x.fillRect(-p.r/2,-p.r/5,p.r,p.r*.4)}x.restore()});if(CF.p.length)requestAnimationFrame(loop);else{CF.run=false;x.clearRect(0,0,CF.c.width,CF.c.height)}})()}
+ CF.fired=(CF.fired||0)+1}
+function flyStar(from){const r=from?from.getBoundingClientRect():{left:innerWidth/2,top:innerHeight/2,width:0,height:0};const t=$('#pStars').getBoundingClientRect();const f=document.createElement('div');f.className='fly';f.textContent='⭐';f.style.left=(r.left+r.width/2-22)+'px';f.style.top=(r.top+r.height/2-22)+'px';document.body.appendChild(f);requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.transform=`translate(${t.left-r.left-r.width/2+10}px,${t.top-r.top-r.height/2+4}px) scale(.6)`;f.style.opacity='.3'}));setTimeout(()=>{f.remove();hud(true)},950)}
+
+/* ---------- header ---------- */
+function hud(pulse){const e=$('#pStars');e.querySelector('b').textContent=nStars()+' / '+TOTAL;const k=$('#pStk');k.querySelector('b').textContent=Object.keys(S.done).length;if(pulse){[e,k].forEach(x=>{x.classList.remove('pop');void x.offsetWidth;x.classList.add('pop')})}$('#voice').setAttribute('aria-pressed',S.voice?'true':'false');$('#voice').textContent=S.voice?'🔊':'🔇'}
+
+/* ---------- modal ---------- */
+function modal(html,onClose){const ov=document.createElement('div');ov.className='ov';ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');ov.innerHTML=`<div class="box">${html}</div>`;document.body.appendChild(ov);const close=()=>{ov.remove();onClose&&onClose()};ov.addEventListener('click',e=>{if(e.target.closest('[data-close]'))close()});const f=ov.querySelector('button');f&&f.focus({preventScroll:true});return {el:ov,close}}
+
+/* ---------- guide bubble ---------- */
+function guideHTML(m,kind,text,small){return `<div class="guide ${small?'small':''}" id="${small?'fb':''}">${mimg(m)}<div class="bub ${kind||''}">${text}</div></div>`}
+function setFb(host,kind,text,spk){const el=$('#fb',host);if(!el)return;const m={good:M.cheer,oops:M.oops,hint:M.think,teach:M.teach,fox:M.fox}[kind]||M.teach;el.outerHTML=guideHTML(m,kind,text,true);const n=$('#fb',host);if(kind==='good'||kind==='fox'){n.classList.add('jump')}if(kind==='oops'){n.querySelector('.bub').classList.add('shake')}if(spk!==false)say(text)}
+
+/* ---------- drag & drop / tap-to-place (pointer events: mouse, touch, pen) ---------- */
+let __swl=0;document.addEventListener('click',e=>{if(Date.now()-__swl<350&&!e.target.closest('.bin')){e.stopPropagation();e.preventDefault()}},true);
+function __drop(o,it,z){__swl=Date.now();o.onDrop(it,z)}
+function DnD(root,o){
+ let sel=null,drag=null,raf=0;
+ const zones=()=>$$(o.zone,root);
+ const clearSel=()=>{if(sel){sel.classList.remove('sel');sel=null}};
+ function zoneAt(x,y){for(const el of document.elementsFromPoint(x,y)){const z=el.closest&&el.closest(o.zone);if(z&&root.contains(z))return z}return null}
+ function edge(){if(!drag||!drag.on)return;const y=drag.y;let dy=0;if(y<110)dy=-(110-y)/6;else if(y>innerHeight-70)dy=(y-innerHeight+70)/6;if(dy){window.scrollBy(0,dy);const z=zoneAt(drag.x,drag.y);zones().forEach(q=>q.classList.toggle('over',q===z))}raf=requestAnimationFrame(edge)}
+ let zd=null;root.addEventListener('pointerdown',e=>{let it=e.target.closest(o.item);if(it&&it.dataset.locked)it=null;if(!it){const z=e.target.closest(o.zone);zd=(z&&root.contains(z))?{z,x:e.clientX,y:e.clientY,id:e.pointerId}:null}if(!it||!root.contains(it)||it.dataset.locked)return;if(e.pointerType==='mouse'&&e.button!==0)return;
+  drag={it,x0:e.clientX,y0:e.clientY,x:e.clientX,y:e.clientY,on:false,id:e.pointerId};try{it.setPointerCapture(e.pointerId)}catch(_){}});
+ root.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id)return;drag.x=e.clientX;drag.y=e.clientY;
+  if(!drag.on&&Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)>8){drag.on=true;clearSel();const g=drag.it.cloneNode(true);g.classList.add('ghost');g.removeAttribute('id');g.style.width=drag.it.offsetWidth+'px';document.body.appendChild(g);drag.g=g;drag.it.classList.add('drag');raf=requestAnimationFrame(edge)}
+  if(drag.on){e.preventDefault();drag.g.style.left=e.clientX+'px';drag.g.style.top=e.clientY+'px';const z=zoneAt(e.clientX,e.clientY);zones().forEach(q=>q.classList.toggle('over',q===z))}});
+ const end=e=>{if(!drag||e.pointerId!==drag.id)return;const d=drag;drag=null;cancelAnimationFrame(raf);try{d.it.releasePointerCapture(d.id)}catch(_){}
+  zones().forEach(q=>q.classList.remove('over'));
+  if(d.on){d.g.remove();d.it.classList.remove('drag');if(e.type==='pointerup'){const z=zoneAt(e.clientX,e.clientY);if(z)__drop(o,d.it,z)}d.it.dataset.dragged='1';setTimeout(()=>delete d.it.dataset.dragged,80)}
+  else if(e.type==='pointerup'){toggle(d.it)}};
+ function toggle(it){if(sel===it){clearSel()}else{clearSel();sel=it;it.classList.add('sel');snd.pop();o.onSelect&&o.onSelect(it)}}
+ root.addEventListener('pointerup',e=>{if(zd&&e.pointerId===zd.id){const q=zd;zd=null;if(Math.hypot(e.clientX-q.x,e.clientY-q.y)<12&&sel&&!(o.skip&&o.skip(e))){const s2=sel;clearSel();__drop(o,s2,q.z);root.dataset.zt=Date.now()}else if(Math.hypot(e.clientX-q.x,e.clientY-q.y)<12&&o.onZoneTap&&!sel){o.onZoneTap(q.z,e);root.dataset.zt=Date.now()}return}end(e)});root.addEventListener('pointercancel',end);
+ root.addEventListener('click',e=>{let it=e.target.closest(o.item);if(it&&it.dataset.locked)it=null;if(it&&root.contains(it)&&e.detail===0&&!it.dataset.locked){toggle(it);return}
+  const z=e.target.closest(o.zone);if(!z||!root.contains(z)||(it&&z===it))return;if(Date.now()-(+root.dataset.zt||0)<700)return;if(!sel){if(e.detail===0&&o.onZoneTap)o.onZoneTap(z,e);return}const s=sel;clearSel();__drop(o,s,z)});
+ return {clear:clearSel};
+}
+
+/* ---------- activity context ---------- */
+function ctx(host,A,onDone){const c={m:0,done:false,host,A};
+ c.miss=(msg,assist)=>{c.m++;snd.oops();setFb(host,'oops',msg||'Oops! Not quite. Try again!');if(c.m>=2&&assist)setTimeout(assist,300)};
+ c.good=(msg,spk)=>{snd.ok();setFb(host,'good',msg,spk)};
+ c.finish=msg=>{if(c.done)return;c.done=true;snd.win();confetti(80);setFb(host,'fox','⭐ '+(msg||A.win||'You did it!'));onDone()};
+ return c}
+
+/* ===================== Float & Sink physics + 3D (three.js) / 2D fallback stage ===================== */
+let THREE=null,GL=null,glFail=false,GLLOST=false;
+const NOGL=/[?&]nogl=1/.test(location.search);
+const DPR=Math.min(window.devicePixelRatio||1,1.6);
+async function load3D(){
+ if(THREE)return true;if(glFail)return false;
+ if(NOGL){glFail=true;return false}
+ try{const c=document.createElement('canvas');const g=c.getContext('webgl2')||c.getContext('webgl');if(!g)throw new Error('no webgl');
+  const lose=g.getExtension('WEBGL_lose_context');if(lose)lose.loseContext();
+  THREE=await import('./assets/three.min.mjs');
+  GL=new THREE.WebGLRenderer({antialias:true,powerPreference:'default',alpha:false});
+  GL.setPixelRatio(DPR);GL.outputColorSpace=THREE.SRGBColorSpace;GL.domElement.className='gl';
+  GL.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();GLLOST=true},false);
+  GL.domElement.addEventListener('webglcontextrestored',()=>{GLLOST=false;if(STAGE&&STAGE.rebuild)STAGE.rebuild()},false);
+  return true}catch(e){console.info('3D off, using 2D fallback:',e&&e.message);glFail=true;THREE=null;GL=null;return false}}
+const has3D=()=>!!THREE&&!GLLOST;
+
+/* ---------- physics (units: cm, g, g/cm3) ---------- */
+const GRAV=700,DRAG=8;
+function bodyH(b){return b.shape==='sphere'||b.shape==='cylH'?2*b.r:b.shape==='ellip'?2*b.c:b.h}
+function bodyV(b){switch(b.shape){case 'box':case 'hull':return b.w*b.d*b.h;case 'sphere':return 4/3*Math.PI*b.r**3;case 'ellip':return 4/3*Math.PI*b.r*b.r*b.c;case 'cylH':return Math.PI*b.r*b.r*b.L;case 'cylV':return Math.PI*b.r*b.r*b.h}return 1}
+function subVol(b,lv){const dep=lv-b.y;if(dep<=0)return 0;
+ switch(b.shape){
+  case 'box':return b.w*b.d*Math.min(dep,b.h);
+  case 'cylV':return Math.PI*b.r*b.r*Math.min(dep,b.h);
+  case 'sphere':{const r=b.r,h=Math.min(dep,2*r);return Math.PI*h*h*(3*r-h)/3}
+  case 'ellip':{const c=b.c,h=Math.min(dep,2*c);return Math.PI*b.r*b.r*h*h*(3*c-h)/(3*c*c)}
+  case 'cylH':{const r=b.r,h=Math.min(dep,2*r);const seg=r*r*Math.acos(Math.max(-1,Math.min(1,(r-h)/r)))-(r-h)*Math.sqrt(Math.max(0,2*r*h-h*h));return seg*b.L}
+  case 'hull':{if(b.flooded)return b.matV*Math.min(1,dep/b.h);return b.w*b.d*Math.min(dep,b.h)}}
+ return 0}
+/* final outcome by reasoning (density compare) - used for grading */
+function verdict(b,rho){if(b.shape==='hull')return b.m>rho*b.V*0.999?'sink':'float';const d=b.m/b.V;if(Math.abs(d-rho)<0.004)return 'hover';return d<rho?'float':'sink'}
+function Sim(vessels){this.v=vessels.map(v=>Object.assign({rho:1,level0:10,shape:'box',x:0,area:0},v));this.v.forEach(v=>{v.area=v.shape==='cyl'?Math.PI*v.r*v.r:v.w*v.d;v.level=v.level0});this.b=[];this.t=0}
+Sim.prototype.add=function(o){const b=Object.assign({x:0,z:0,y:0,vy:0,vi:0,t:0,still:0,held:false,flooded:false,cargo:0,arrows:false},o);b.V=b.V||bodyV(b);b.H=bodyH(b);if(b.shape==='hull')b.matV=b.matV||b.m/1.6;b.ry=b.ry||0;b.tilt=0;this.b.push(b);return b};
+Sim.prototype.remove=function(b){this.b=this.b.filter(x=>x!==b)};
+Sim.prototype.step=function(dt){this.t+=dt;
+ for(const v of this.v){let s=0;for(const b of this.b)if(b.vi===this.v.indexOf(v)&&!b.held)s+=subVol(b,v.level);const target=v.level0+s/v.area;v.level+=(target-v.level)*Math.min(1,dt*12)}
+ for(const b of this.b){if(b.held)continue;const v=this.v[b.vi];const lv=v.level;
+  if(b.shape==='hull'&&!b.flooded&&lv-b.y>b.h*0.97&&b.m>v.rho*b.V*0.999){b.flooded=true;b.onFlood&&b.onFlood(b)}
+  const Vs=subVol(b,lv),fr=Vs/b.V;b.up=v.rho*Vs;
+  let a=GRAV*(v.rho*Vs-b.m)/b.m/(1+0.4*fr);a-=(DRAG*fr*(b.dragK||1)+0.25)*b.vy;
+  b.vy+=a*dt;b.y+=b.vy*dt;const fl=v.floor||0;
+  if(b.y<fl){b.y=fl;if(b.vy<0)b.vy*=-0.15;if(Math.abs(b.vy)<3)b.vy=0}
+  if(b.ceil!=null&&b.y+b.H>b.ceil){b.y=b.ceil-b.H;if(b.vy>0)b.vy=0}
+  b.t+=dt;const wasIn=b.inW;b.inW=b.y<lv;if(wasIn===false&&b.inW&&b.vy<-40&&this.onSplash)this.onSplash(b,v);
+  b.tilt=b.inW?Math.sin(this.t*2+b.x)*0.04*Math.min(1,Math.abs(b.vy)/30+0.3)*(b.y<=fl+0.01?0:1):0;
+  if(Math.abs(b.vy)<1.2)b.still+=dt;else b.still=0;
+  if(b.onSettle&&!b.settled&&b.t>0.9&&(b.still>0.5||b.t>9)){b.settled=true;const r=verdict(b,v.rho);const f=b.onSettle;f(r,b)}}};
+Sim.prototype.level=function(i){return this.v[i||0].level};
+
+/* ---------- canvas helpers ---------- */
+function gradTex(top,bot){const c=document.createElement('canvas');c.width=4;c.height=256;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,0,256);g.addColorStop(0,top);g.addColorStop(1,bot);x.fillStyle=g;x.fillRect(0,0,4,256);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t}
+function blobTex(){const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d');const g=x.createRadialGradient(32,32,2,32,32,31);g.addColorStop(0,'rgba(0,0,0,.35)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)}
+function textSprite(txt,o){o=o||{};const c=document.createElement('canvas');const fs=o.fs||44;const x=c.getContext('2d');x.font=`900 ${fs}px NunitoE,Nunito,Arial`;const w=Math.ceil(x.measureText(txt).width)+fs*.8;c.width=w;c.height=fs*1.5;const y=c.getContext('2d');y.font=`900 ${fs}px NunitoE,Nunito,Arial`;y.fillStyle=o.bg||'rgba(255,255,255,.92)';const r=fs*.45;y.beginPath();y.roundRect?y.roundRect(0,0,w,c.height,r):y.rect(0,0,w,c.height);y.fill();y.fillStyle=o.col||'#27324a';y.textBaseline='middle';y.fillText(txt,fs*.4,c.height/2+2);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t,depthTest:false,transparent:true}));const sc=o.size||1.6;s.scale.set(sc*w/c.height,sc,1);s.renderOrder=10;return s}
+function tickTex(maxMl,step,cmPer,hpx){const c=document.createElement('canvas');c.width=128;c.height=512;const x=c.getContext('2d');x.clearRect(0,0,128,512);x.fillStyle='#1d3d6b';x.strokeStyle='#1d3d6b';x.font='900 30px NunitoE,Arial';x.lineWidth=4;const n=maxMl/step;for(let i=1;i<=n;i++){const y=512-512*i/n;const big=i%(n>12?5:2)===0||n<=8;x.beginPath();x.moveTo(0,y);x.lineTo(big?44:24,y);x.stroke();if(big)x.fillText(String(i*step),50,y+11)}const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t}
+
+/* ---------- 3D builders (origin = bottom centre) ---------- */
+const MAT={};
+function mat(col,o){const k=col+JSON.stringify(o||{});if(MAT[k])return MAT[k];o=o||{};const m=o.basic?new THREE.MeshBasicMaterial({color:col,transparent:!!o.op,opacity:o.op||1}):new THREE.MeshPhongMaterial({color:col,shininess:o.shine!=null?o.shine:40,specular:o.spec||0x333333,transparent:!!o.op,opacity:o.op==null?1:o.op,flatShading:!!o.flat,side:o.ds?THREE.DoubleSide:0,depthWrite:o.op?false:true,emissive:o.em||0x000000});MAT[k]=m;return m}
+function MS(geo,m,x,y,z){const me=new THREE.Mesh(geo,m);me.position.set(x||0,y||0,z||0);return me}
+function eyes(g,s,y,z,x){s=s||1;x=x||0;const W=mat(0xffffff,{shine:80}),B=mat(0x1b2a4a,{shine:100}),Sp=mat(0xffffff,{basic:true});for(const sx of[-1,1]){const e=MS(new THREE.SphereGeometry(.42*s,14,10),W,x+sx*.55*s,y,z);e.scale.z=.6;g.add(e);const p=MS(new THREE.SphereGeometry(.26*s,12,8),B,x+sx*.55*s,y-.02*s,z+.2*s);p.scale.z=.6;g.add(p);g.add(MS(new THREE.SphereGeometry(.08*s,6,4),Sp,x+sx*.55*s+.08*s,y+.1*s,z+.33*s))}
+ const sm=MS(new THREE.TorusGeometry(.28*s,.06*s,6,12,Math.PI),mat(0x7a2a2a),x,y-.55*s,z);sm.rotation.z=Math.PI;g.add(sm);return g}
+const LOOK={
+ block(b){const g=new THREE.Group();const m=mat(b.col||0xd99a55,{shine:10});g.add(MS(new THREE.BoxGeometry(b.w,b.h,b.d),m,0,b.h/2,0));if(b.face)eyes(g,Math.min(b.w,b.h)/5,b.h*.6,b.d/2);return g},
+ cubes(b){const g=new THREE.Group();const s=b.s,m=mat(b.col||0x9bd36a,{shine:20}),e=mat(b.edge||0x5a8a3a);const geo=new THREE.BoxGeometry(s*.94,s*.94,s*.94);for(let i=0;i<b.nx;i++)for(let j=0;j<b.ny;j++)for(let k=0;k<b.nz;k++)g.add(MS(geo,(i+j+k)%2?m:mat(b.col2||b.col||0x8cc65a,{shine:20}),(i-(b.nx-1)/2)*s,(j+.5)*s,(k-(b.nz-1)/2)*s));if(b.face)eyes(g,s*.35,b.ny*s*.6,b.nz*s/2+.02);if(b.robo){const r=new THREE.Group();const gr=mat(0xb8c2cc,{shine:90});r.add(MS(new THREE.BoxGeometry(2.2,2,1.6),gr,0,1,0));r.add(MS(new THREE.BoxGeometry(1.8,1.4,1.4),mat(0x7fdcc1,{shine:80}),0,2.7,0));eyes(r,.5,2.8,.72);r.add(MS(new THREE.CylinderGeometry(.08,.08,.8,6),gr,0,3.7,0));r.add(MS(new THREE.SphereGeometry(.22,8,6),mat(0xff4d6d,{em:0x550000}),0,4.15,0));r.position.y=b.ny*s;g.add(r)}return g},
+ log(b){const g=new THREE.Group();const geo=new THREE.CylinderGeometry(b.r,b.r,b.L,22,1);const me=new THREE.Mesh(geo,[mat(0x8a5a2b,{shine:5}),mat(0xe8c48a,{shine:5}),mat(0xe8c48a,{shine:5})]);me.rotation.z=Math.PI/2;me.position.y=b.r;g.add(me);for(const sx of[-1,1]){const ring=MS(new THREE.TorusGeometry(b.r*.55,b.r*.05,6,20),mat(0xb88a50),sx*(b.L/2+.01),b.r,0);ring.rotation.y=Math.PI/2;g.add(ring)}const k=MS(new THREE.CylinderGeometry(b.r*.18,b.r*.22,b.r*.7,8),mat(0x7a4b20),b.L*.2,b.r*1.85,0);g.add(k);if(b.face)eyes(g,b.r*.35,b.r*1.15,b.r*.93);return g},
+ coin(b){const g=new THREE.Group();const me=new THREE.Mesh(new THREE.CylinderGeometry(b.r,b.r,b.h,26),[mat(0xc9a13a,{shine:90,spec:0xffeeaa}),mat(0xf2c94c,{shine:90,spec:0xffeeaa}),mat(0xf2c94c,{shine:90})]);me.position.y=b.h/2;g.add(me);const st=MS(new THREE.TorusGeometry(b.r*.7,b.h*.15,4,24),mat(0xb8860b),0,b.h,0);st.rotation.x=Math.PI/2;g.add(st);return g},
+ ball(b){const g=new THREE.Group();g.add(MS(new THREE.SphereGeometry(b.r,24,16),mat(b.col||0xff5d73,{shine:90}),0,b.r,0));const band=MS(new THREE.TorusGeometry(b.r*1.001,b.r*.12,6,28),mat(0xffffff,{shine:90}),0,b.r,0);g.add(band);if(b.face)eyes(g,b.r*.35,b.r*1.25,b.r*.9);return g},
+ stone(b){const g=new THREE.Group();const me=MS(new THREE.DodecahedronGeometry(b.r,1),mat(0x8d8f99,{flat:true,shine:10}),0,b.r,0);me.scale.set(1.1,.85,1);g.add(me);return g},
+ apple(b){const g=new THREE.Group();const s=MS(new THREE.SphereGeometry(b.r,22,16),mat(0xe63946,{shine:70}),0,b.r,0);s.scale.y=.92;g.add(s);g.add(MS(new THREE.CylinderGeometry(b.r*.06,b.r*.08,b.r*.5,6),mat(0x6b3e1e),0,b.r*1.95,0));const lf=MS(new THREE.SphereGeometry(b.r*.25,8,6),mat(0x3bb54a),b.r*.2,b.r*2,0);lf.scale.set(1.4,.35,.7);g.add(lf);return g},
+ candle(b){const g=new THREE.Group();g.add(MS(new THREE.CylinderGeometry(b.r,b.r,b.h,18),mat(0xffc8dd,{shine:30}),0,b.h/2,0));g.add(MS(new THREE.CylinderGeometry(b.r*.08,b.r*.08,b.r*.6,5),mat(0x333333),0,b.h+b.r*.3,0));return g},
+ ice(b){const g=new THREE.Group();g.add(MS(new THREE.BoxGeometry(b.w,b.h,b.d),mat(0xcff4ff,{op:.75,shine:120,spec:0xffffff}),0,b.h/2,0));return g},
+ key(b){const g=new THREE.Group();const m=mat(0xb8c2cc,{shine:120,spec:0xffffff});const ring=MS(new THREE.TorusGeometry(b.w*.18,b.w*.06,8,16),m,-b.w*.3,b.h/2,0);ring.rotation.x=Math.PI/2;g.add(ring);g.add(MS(new THREE.BoxGeometry(b.w*.6,b.h,b.d*.3),m,b.w*.15,b.h/2,0));g.add(MS(new THREE.BoxGeometry(b.w*.08,b.h,b.d*.6),m,b.w*.4,b.h/2,b.d*.2));return g},
+ marble(b){const g=new THREE.Group();g.add(MS(new THREE.SphereGeometry(b.r,18,12),mat(0x5ec8ff,{op:.8,shine:150,spec:0xffffff}),0,b.r,0));return g},
+ duck(b){const g=new THREE.Group();const y=mat(0xffd23f,{shine:60});const bd=MS(new THREE.SphereGeometry(b.r,18,12),y,0,b.r*.9,0);bd.scale.set(1.25,.85,1);g.add(bd);g.add(MS(new THREE.SphereGeometry(b.r*.6,16,12),y,b.r*.55,b.r*1.75,0));const bk=MS(new THREE.ConeGeometry(b.r*.22,b.r*.5,10),mat(0xff8c1a),b.r*1.25,b.r*1.7,0);bk.rotation.z=-Math.PI/2;g.add(bk);g.add(MS(new THREE.SphereGeometry(b.r*.1,8,6),mat(0x111111),b.r*.85,b.r*1.95,b.r*.35));return g},
+ egg(b){const g=new THREE.Group();const e=MS(new THREE.SphereGeometry(b.r,24,18),mat(0xf6e3c6,{shine:50}),0,b.c,0);e.scale.y=b.c/b.r;g.add(e);if(b.face)eyes(g,b.r*.32,b.c*1.15,b.r*.9);return g},
+ clay(b){const g=new THREE.Group();g.add(MS(new THREE.SphereGeometry(b.r,22,16),mat(0xff8a4c,{shine:25}),0,b.r,0));return g},
+ hull(b){const g=new THREE.Group();const t=b.t||.35,m=mat(b.col||0xff8a4c,{shine:30}),w=b.w,d=b.d,h=b.h;
+  g.add(MS(new THREE.BoxGeometry(w,t,d),m,0,t/2,0));
+  g.add(MS(new THREE.BoxGeometry(w,h,t),b.col2?mat(b.col2,{shine:30}):m,0,h/2,d/2-t/2));g.add(MS(new THREE.BoxGeometry(w,h,t),m,0,h/2,-d/2+t/2));
+  g.add(MS(new THREE.BoxGeometry(t,h,d-2*t),m,w/2-t/2,h/2,0));g.add(MS(new THREE.BoxGeometry(t,h,d-2*t),m,-w/2+t/2,h/2,0));
+  if(b.rim)g.add(MS(new THREE.BoxGeometry(w+.2,.25,d+.2),mat(b.rim),0,h,0));
+  if(b.plim){const pm=mat(0xffffff,{basic:true});const ry=h*b.plim;const ring=MS(new THREE.TorusGeometry(h*.16,h*.03,6,20),pm,w*.15,ry,d/2+.02);g.add(ring);g.add(MS(new THREE.BoxGeometry(h*.5,h*.05,.05),pm,w*.15,ry,d/2+.03));g.add(MS(new THREE.BoxGeometry(w*.98,h*.04,.04),mat(0xfff35c,{basic:true}),0,ry,d/2+.025))}
+  const mask=MS(new THREE.BoxGeometry(w-2*t-.05,h-t,d-2*t-.05),new THREE.MeshBasicMaterial({colorWrite:false}),0,t+(h-t)/2,0);mask.renderOrder=1;g.add(mask);g.userData.mask=mask;
+  g.userData.crates=new THREE.Group();g.add(g.userData.crates);if(b.face)eyes(g,h*.28,h*.55,d/2+.05,-w*.3);return g},
+ sub(b){const g=new THREE.Group();const Y=mat(0xffc727,{shine:80});const body=MS(new THREE.CapsuleGeometry(b.r,b.L-2*b.r,8,18),Y,0,b.r,0);body.rotation.z=Math.PI/2;g.add(body);g.add(MS(new THREE.CylinderGeometry(b.r*.35,b.r*.45,b.r*.7,14),Y,-b.L*.08,b.r*2.15,0));const per=MS(new THREE.CylinderGeometry(b.r*.08,b.r*.08,b.r*.8,8),mat(0xd9a400),b.L*.02,b.r*2.6,0);g.add(per);
+  const prop=new THREE.Group();for(let i=0;i<3;i++){const bl=MS(new THREE.BoxGeometry(.08,b.r*.9,b.r*.25),mat(0xff8c1a),0,0,0);bl.rotation.x=i*Math.PI*2/3;bl.position.y=0;prop.add(bl)}prop.position.set(-b.L/2-.2,b.r,0);g.add(prop);g.userData.prop=prop;
+  const pw=MS(new THREE.CircleGeometry(b.r*.35,18),mat(0x7fd3ff,{shine:150,spec:0xffffff}),-b.L*.2,b.r*1.05,b.r*.98);g.add(pw);eyes(g,b.r*.32,b.r*1.15,b.r*.9,b.L*.25);
+  const tank=MS(new THREE.BoxGeometry(b.L*.5,b.r*.5,.05),mat(0xffffff,{op:.6}),0,b.r*.45,b.r*1.0);g.add(tank);const tw=MS(new THREE.BoxGeometry(b.L*.5,b.r*.5,.06),mat(0x2e86ff,{basic:true}),0,b.r*.45,b.r*1.01);g.add(tw);g.userData.tw=tw;return g},
+ crown(b){const g=new THREE.Group();const m=mat(b.col||0xf2c94c,{shine:120,spec:0xffeeaa});g.add(MS(new THREE.CylinderGeometry(b.r,b.r*.92,b.h*.6,20,1,true),new THREE.MeshPhongMaterial({color:b.col||0xf2c94c,shininess:120,side:THREE.DoubleSide}),0,b.h*.3,0));for(let i=0;i<6;i++){const a=i/6*Math.PI*2;const c=MS(new THREE.ConeGeometry(b.r*.22,b.h*.45,6),m,Math.cos(a)*b.r*.95,b.h*.8,Math.sin(a)*b.r*.95);g.add(c);g.add(MS(new THREE.SphereGeometry(b.r*.1,8,6),mat(i%2?0xff4d6d:0x4dd0ff,{shine:150}),Math.cos(a)*b.r,b.h*.35,Math.sin(a)*b.r))}return g},
+ berg(b){const g=new THREE.Group();const me=MS(new THREE.IcosahedronGeometry(1,1),mat(0xeaf8ff,{flat:true,shine:60}),0,b.h/2,0);me.scale.set(b.w/2,b.h/2,b.d/2);g.add(me);eyes(g,b.w*.09,b.h*.86,b.d*.36);return g},
+ orange(b){const g=new THREE.Group();const me=MS(new THREE.IcosahedronGeometry(b.r,2),mat(b.peeled?0xffc48a:0xff9b1a,{shine:b.peeled?20:60}),0,b.r,0);g.add(me);if(b.peeled){for(let i=0;i<8;i++){const a=i/8*Math.PI*2;const l=MS(new THREE.BoxGeometry(.06,b.r*1.9,.06),mat(0xfff0d8),Math.cos(a)*b.r*.98,b.r,Math.sin(a)*b.r*.98);l.lookAt(0,b.r,0);g.add(l)}}else{g.add(MS(new THREE.CylinderGeometry(b.r*.06,b.r*.06,b.r*.3,6),mat(0x6b3e1e),0,b.r*2,0));const lf=MS(new THREE.SphereGeometry(b.r*.22,8,6),mat(0x3bb54a),b.r*.18,b.r*2.02,0);lf.scale.set(1.5,.3,.7);g.add(lf)}return g},
+ chest(b){const g=new THREE.Group();g.add(MS(new THREE.BoxGeometry(b.w,b.h*.7,b.d),mat(0x8a5a2b,{shine:10}),0,b.h*.35,0));const lid=MS(new THREE.CylinderGeometry(b.d/2,b.d/2,b.w,12,1,false,0,Math.PI),mat(0x9b6a35,{shine:10}),0,b.h*.7,0);lid.rotation.z=Math.PI/2;lid.rotation.y=Math.PI/2;g.add(lid);g.add(MS(new THREE.BoxGeometry(b.w*1.02,b.h*.12,b.d*1.02),mat(0xf2c94c,{shine:120}),0,b.h*.6,0));g.add(MS(new THREE.SphereGeometry(b.h*.12,8,6),mat(0xf2c94c,{shine:120}),0,b.h*.5,b.d/2+.05));for(let i=0;i<4;i++)g.add(MS(new THREE.CylinderGeometry(.35,.35,.15,10),mat(0xffd23f,{shine:120,em:0x553300}),(i-1.5)*.8,b.h*.95+.1,0));return g},
+ nail(b){const g=new THREE.Group();const m=mat(0x9aa3ad,{shine:100});const s=MS(new THREE.CylinderGeometry(b.h*.25,b.h*.25,b.w*.85,8),m,b.w*.05,b.h/2,0);s.rotation.z=Math.PI/2;g.add(s);const hd=MS(new THREE.CylinderGeometry(b.h*.5,b.h*.5,b.w*.08,12),m,-b.w*.42,b.h/2,0);hd.rotation.z=Math.PI/2;g.add(hd);return g},
+ sponge(b){const g=new THREE.Group();g.add(MS(new THREE.BoxGeometry(b.w,b.h,b.d),mat(0xffe66d,{shine:5}),0,b.h/2,0));g.add(MS(new THREE.BoxGeometry(b.w,b.h*.3,b.d),mat(0x3bb54a,{shine:5}),0,b.h*.15,0));return g},
+ bottle(b){const g=new THREE.Group();g.add(MS(new THREE.CylinderGeometry(b.r,b.r,b.h*.75,18),mat(0x9be3ff,{op:.55,shine:120}),0,b.h*.375,0));g.add(MS(new THREE.CylinderGeometry(b.r*.4,b.r,b.h*.2,18),mat(0x9be3ff,{op:.55}),0,b.h*.85,0));g.add(MS(new THREE.CylinderGeometry(b.r*.42,b.r*.42,b.h*.08,12),mat(0x2e86ff),0,b.h*.98,0));return g},
+};
+
+/* ---------- Stage: one activity's world ---------- */
+let STAGE=null;
+function Stage(host,cfg){
+ const st=this;st.cfg=cfg;st.host=host;st.sim=new Sim(cfg.vessels);st.items=[];st.fx=[];st.alive=true;st.yaw=cfg.yaw||0;st.pitch=cfg.pitch!=null?cfg.pitch:.28;st.dyaw=0;
+ if(STAGE&&STAGE!==st)STAGE.dispose();STAGE=st;
+ host.classList.add('stage');host.innerHTML='';
+ st.mode=has3D()?'3d':'2d';host.dataset.mode=st.mode;
+ st.sim.onSplash=(b,v)=>st.splash(b,v);
+ if(st.mode==='3d')st.init3D();else st.init2D();
+ const hint=document.createElement('div');hint.className='sthint';hint.textContent=st.mode==='3d'?'↔ drag to turn the 3D view':'2D view';host.appendChild(hint);
+ st.resize();st.ro=new ResizeObserver(()=>st.resize());st.ro.observe(host);
+ let last=performance.now();
+ const loop=now=>{if(!st.alive)return;st.raf=requestAnimationFrame(loop);if(document.hidden)return;let dt=Math.min(.05,(now-last)/1000);last=now;const n=2;for(let i=0;i<n;i++)st.sim.step(dt/n);st.cfg.onTick&&st.cfg.onTick(dt);st.draw(dt)};
+ st.raf=requestAnimationFrame(loop);
+}
+Stage.prototype.resize=function(){const w=Math.max(200,this.host.clientWidth),h=Math.round(Math.min(this.cfg.maxH||380,w*(this.cfg.aspect||.78)));this.W=w;this.H=h;if(this.mode==='3d'){GL.setSize(w,h);this.cam.aspect=w/h;this.cam.updateProjectionMatrix()}else{this.cv.width=w*DPR;this.cv.height=h*DPR;this.cv.style.width=w+'px';this.cv.style.height=h+'px'}};
+Stage.prototype.dispose=function(){this.alive=false;cancelAnimationFrame(this.raf);this.ro&&this.ro.disconnect();if(this.scene){this.scene.traverse(o=>{if(o.geometry)o.geometry.dispose()});if(this.bgTex)this.bgTex.dispose()}if(STAGE===this)STAGE=null};
+Stage.prototype.bounds=function(){let x0=1e9,x1=-1e9,h=0;for(const v of this.sim.v){const hw=v.shape==='cyl'?v.r:v.w/2;x0=Math.min(x0,v.x-hw);x1=Math.max(x1,v.x+hw);h=Math.max(h,v.h)}return{x0,x1,h}};
+/* ---- 3D ---- */
+Stage.prototype.init3D=function(){const st=this,cfg=this.cfg;const sc=st.scene=new THREE.Scene();st.bgTex=gradTex(cfg.sky||'#8fd3ff',cfg.sky2||'#fff4e0');sc.background=st.bgTex;
+ sc.add(new THREE.HemisphereLight(0xffffff,0x88a0c0,1.6));const dl=new THREE.DirectionalLight(0xffffff,1.6);dl.position.set(-12,30,22);sc.add(dl);
+ const B=st.bounds();st.B=B;const span=Math.max(B.x1-B.x0,B.h*1.1);
+ st.cam=new THREE.PerspectiveCamera(cfg.fov||38,1,.5,span*20);
+ st.target=new THREE.Vector3((B.x0+B.x1)/2,B.h*(cfg.ty||.48),0);st.dist=span*(cfg.dist||1.5);
+ if(cfg.env!=='sea'){const tab=MS(new THREE.CylinderGeometry(span*1.3,span*1.3,1.2,40),mat(0xe9b97a,{shine:10}),st.target.x,-.6,0);sc.add(tab);const rim=MS(new THREE.TorusGeometry(span*1.3,.4,6,48),mat(0xc98d4a),st.target.x,-.05,0);rim.rotation.x=Math.PI/2;sc.add(rim);
+  const deco=[[0xff6a8d,-1],[0x7d4fe8,1],[0x2fb872,-.6]];deco.forEach(([c,s],i)=>{const p=MS(new THREE.SphereGeometry(span*.06,12,8),mat(c,{shine:60}),st.target.x+s*span*.85,span*.06,-span*.75-i);sc.add(p)})}
+ st.blob=blobTex();
+ st.vm=[];for(const v of st.sim.v)st.vm.push(st.buildVessel(v));
+ const cv=GL.domElement;st.host.appendChild(cv);st.cv=cv;
+ let drag=null;cv.style.touchAction='pan-y';
+ cv.onpointerdown=e=>{drag={x:e.clientX,y0:st.yaw}};cv.onpointermove=e=>{if(drag){st.yaw=Math.max(-.75,Math.min(.75,drag.y0+(e.clientX-drag.x)/220))}};cv.onpointerup=cv.onpointercancel=cv.onpointerleave=()=>{drag=null};
+ // splash pool
+ st.drops=[];const dg=new THREE.SphereGeometry(1,8,6),dm=mat(0x8fd8ff,{shine:120});for(let i=0;i<18;i++){const d=MS(dg,dm);d.visible=false;sc.add(d);st.drops.push({m:d,v:new THREE.Vector3(),t:0})}
+ st.rings=[];for(let i=0;i<3;i++){const r=MS(new THREE.RingGeometry(.8,1,32),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));r.rotation.x=-Math.PI/2;r.visible=false;sc.add(r);st.rings.push({m:r,t:9})}
+ if(cfg.env==='sea')st.buildSea();
+};
+Stage.prototype.buildVessel=function(v){const sc=this.scene,g=new THREE.Group();g.position.x=v.x;sc.add(g);const o={g,v};
+ const glass=new THREE.MeshPhongMaterial({color:0xdff3ff,transparent:true,opacity:.16,shininess:150,specular:0xffffff,side:THREE.DoubleSide,depthWrite:false});
+ const wc=v.water||0x2fa4ff;
+ if(v.shape==='cyl'){const gl=MS(new THREE.CylinderGeometry(v.r+.15,v.r+.15,v.h,40,1,true),glass,0,v.h/2,0);g.add(gl);const rim=MS(new THREE.TorusGeometry(v.r+.15,.12,6,40),mat(0xffffff,{op:.7}),0,v.h,0);rim.rotation.x=Math.PI/2;g.add(rim);g.add(MS(new THREE.CylinderGeometry(v.r+.3,v.r+.3,.5,40),mat(0xdff3ff,{op:.6}),0,-.25,0));
+  o.water=MS(new THREE.CylinderGeometry(v.r,v.r,1,40),new THREE.MeshPhongMaterial({color:wc,transparent:true,opacity:.42,shininess:80,depthWrite:false}),0,0,0);o.water.geometry.translate(0,.5,0);g.add(o.water);
+  o.surf=MS(new THREE.CircleGeometry(v.r,40),new THREE.MeshPhongMaterial({color:0x9fe0ff,transparent:true,opacity:.5,shininess:150,specular:0xffffff,depthWrite:false,side:THREE.DoubleSide}));o.surf.rotation.x=-Math.PI/2;g.add(o.surf);
+  if(v.ticks){const tex=tickTex(v.ticks.max,v.ticks.step);const pl=MS(new THREE.PlaneGeometry(v.r*.55,v.ticks.max/v.area*1),new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false}));pl.position.set(-v.r*.25,v.ticks.max/v.area/2,v.r+.2);g.add(pl)}}
+ else{const gl=MS(new THREE.BoxGeometry(v.w+.3,v.h,v.d+.3),glass,0,v.h/2,0);g.add(gl);const ed=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(v.w+.3,v.h,v.d+.3)),new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.8}));ed.position.y=v.h/2;g.add(ed);
+  if(this.cfg.env!=='sea')g.add(MS(new THREE.BoxGeometry(v.w+.8,.6,v.d+.8),mat(0x5d6d8a,{shine:30}),0,-.3,0));
+  o.water=MS(new THREE.BoxGeometry(v.w,1,v.d),new THREE.MeshPhongMaterial({color:wc,transparent:true,opacity:v.op||.42,shininess:80,depthWrite:false}),0,0,0);o.water.geometry.translate(0,.5,0);g.add(o.water);
+  const sg=new THREE.PlaneGeometry(v.w,v.d,14,8);o.surf=MS(sg,new THREE.MeshPhongMaterial({color:0xaee6ff,transparent:true,opacity:.55,shininess:150,specular:0xffffff,depthWrite:false,side:THREE.DoubleSide}));o.surf.rotation.x=-Math.PI/2;g.add(o.surf);o.sz=sg.attributes.position.array.slice()}
+ if(v.zone){const zb=MS(new THREE.BoxGeometry(v.w*.98,v.zone[1]-v.zone[0],v.d*.98),new THREE.MeshBasicMaterial({color:0x3dff8a,transparent:true,opacity:.18,depthWrite:false}),0,(v.zone[0]+v.zone[1])/2,0);g.add(zb);const ze=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(v.w*.98,v.zone[1]-v.zone[0],v.d*.98)),new THREE.LineBasicMaterial({color:0x3dff8a}));ze.position.y=(v.zone[0]+v.zone[1])/2;g.add(ze)}
+ if(v.label){const s=textSprite(v.label,{size:Math.max(1.4,v.h*.08)});s.position.set(0,v.h+v.h*.12,0);g.add(s);o.lab=s}
+ o.wave=0;return o};
+Stage.prototype.setWater=function(i,col,op){const o=this.vm&&this.vm[i];if(o){o.water.material.color.set(col);if(op)o.water.material.opacity=op}if(this.sim.v[i])this.sim.v[i].water=col};
+Stage.prototype.setLabel=function(i,txt){const o=this.vm&&this.vm[i];if(!o)return;if(o.lab){o.g.remove(o.lab);o.lab.material.map.dispose()}const v=o.v;const s=textSprite(txt,{size:Math.max(1.4,v.h*.08)});s.position.set(0,v.h*1.12,0);o.g.add(s);o.lab=s};
+Stage.prototype.buildSea=function(){const sc=this.scene,v=this.sim.v[0];const sand=MS(new THREE.BoxGeometry(v.w,1.2,v.d),mat(0xf3d38b,{shine:5}),v.x,.6-1.2+ (v.floor||0)*0+0,0);sand.position.y=(v.floor||0)-.6;sc.add(sand);
+ for(let i=0;i<7;i++){const h=v.h*(.12+.08*(i%3));const sw=MS(new THREE.ConeGeometry(.5,h,6),mat(i%2?0x2fb872:0x1f8f57,{flat:true}),v.x-v.w/2+2+i*(v.w-4)/6,(v.floor||0)+h/2,-v.d/2+1.2+(i%2));sc.add(sw)}
+ for(let i=0;i<5;i++){const r=MS(new THREE.DodecahedronGeometry(.8+.5*(i%2),0),mat(0x9a8f99,{flat:true}),v.x-v.w/2+3+i*v.w/5,(v.floor||0)+.3,v.d/2-1.5-(i%2));sc.add(r)}
+ const fishes=[];for(let i=0;i<3;i++){const f=new THREE.Group();const bd=MS(new THREE.SphereGeometry(.9,12,8),mat([0xff9b3d,0xff6a8d,0x7d4fe8][i],{shine:60}));bd.scale.set(1.4,1,.6);f.add(bd);const tl=MS(new THREE.ConeGeometry(.6,1,6),mat([0xff9b3d,0xff6a8d,0x7d4fe8][i]),-1.5,0,0);tl.rotation.z=Math.PI/2;f.add(tl);f.add(MS(new THREE.SphereGeometry(.18,6,4),mat(0x111111),.8,.25,.45));sc.add(f);fishes.push({f,y:v.h*(.35+.18*i),s:.5+.25*i,ph:i*2})}this.fishes=fishes};
+Stage.prototype.add=function(spec){const b=this.sim.add(spec);if(this.mode==='3d'){const g=LOOK[spec.look||'block'](b);this.scene.add(g);b.g=g;const sh=MS(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:this.blob,transparent:true,depthWrite:false}));sh.rotation.x=-Math.PI/2;sh.renderOrder=0;this.scene.add(sh);b.sh=sh;if(spec.arrows)this.addArrows(b)}this.items.push(b);return b};
+Stage.prototype.addArrows=function(b){if(this.mode!=='3d'||b.ar)return;const mk=(col)=>{const g=new THREE.Group();const s=MS(new THREE.CylinderGeometry(.3,.3,1,8),mat(col,{basic:true}));s.position.y=.5;g.add(s);const c=MS(new THREE.ConeGeometry(.7,1.3,10),mat(col,{basic:true}));c.position.y=1;g.add(c);g.userData.c=c;g.userData.s=s;g.traverse(o=>{o.renderOrder=9;if(o.material){o.material.depthTest=false}});this.scene.add(g);return g};b.ar={up:mk(0x1e90ff),dn:mk(0xff3b3b)};b.ar.dn.rotation.z=Math.PI};
+Stage.prototype.removeBody=function(b){this.sim.remove(b);if(b.g){this.scene.remove(b.g);this.scene.remove(b.sh);if(b.ar){this.scene.remove(b.ar.up);this.scene.remove(b.ar.dn)}}this.items=this.items.filter(x=>x!==b)};
+Stage.prototype.clear=function(){[...this.items].forEach(b=>this.removeBody(b))};
+Stage.prototype.splash=function(b,v){const o=this.vm&&this.vm[b.vi];if(o)o.wave=Math.min(1.5,o.wave+Math.min(1,Math.abs(b.vy)/150));snd.splash&&snd.splash(Math.min(1,Math.abs(b.vy)/200));if(this.mode!=='3d')return;const lv=v.level,x=v.x+b.x,z=b.z;let k=0;for(const d of this.drops){if(d.t>0)continue;d.t=.9;const a=Math.random()*Math.PI*2,sp=8+Math.random()*10;d.v.set(Math.cos(a)*sp*.5,14+Math.random()*12,Math.sin(a)*sp*.5);d.m.position.set(x,lv,z);d.m.scale.setScalar(.18+Math.random()*.22);d.m.visible=true;if(++k>9)break}
+ const r=this.rings.find(r=>r.t>1)||this.rings[0];r.t=0;r.m.position.set(x,lv+.05,z);r.m.visible=true};
+Stage.prototype.draw=function(dt){if(this.mode==='3d')this.draw3D(dt);else this.draw2D(dt)};
+Stage.prototype.draw3D=function(dt){if(GLLOST)return;const st=this,sim=st.sim,t=sim.t;
+ st.vm.forEach((o,i)=>{const v=sim.v[i],lv=v.level;o.water.scale.y=Math.max(.01,lv-.05);o.water.position.y=.05;o.surf.position.y=lv;o.wave=Math.max(0,o.wave-dt*.6);
+  if(o.sz){const p=o.surf.geometry.attributes.position;const a=p.array;const amp=.04+o.wave*.35;for(let k=0;k<a.length;k+=3){a[k+2]=Math.sin(a[k]*.9+t*2.4)*amp+Math.cos(a[k+1]*1.3+t*1.9)*amp*.6}p.needsUpdate=true}});
+ for(const b of sim.b){if(!b.g)continue;const v=sim.v[b.vi];b.g.position.set(v.x+b.x,b.y,b.z);b.g.rotation.z=b.tilt;b.g.rotation.y=b.ry;if(b.held){b.g.position.y+=Math.sin(t*3)*.15}
+  b.sh.visible=!b.held;const fl=v.floor||0;const hgt=b.y-fl;const sz=(b.shape==='hull'||b.shape==='box'?Math.max(b.w,b.d):b.shape==='cylH'?b.L:2*b.r)*1.25/(1+hgt*.04);b.sh.scale.set(sz,sz*.7,1);b.sh.position.set(v.x+b.x,fl+.03,b.z);
+  if(b.g.userData.mask)b.g.userData.mask.visible=!b.flooded;
+  if(b.g.userData.prop)b.g.userData.prop.rotation.x+=dt*(4+Math.abs(b.vy)*.3);
+  if(b.g.userData.tw&&b.ballast!=null){b.g.userData.tw.scale.y=Math.max(.02,b.ballast);b.g.userData.tw.position.y=b.r*.2+b.r*.5*b.ballast/2}
+  if(b.ar){const show=b.arrows&&!b.held;b.ar.up.visible=b.ar.dn.visible=show;if(show){const L=b.arScale||6,mx=b.arMax||b.m*1.6;const cy=b.y+b.H/2;const lu=Math.max(.05,(b.up||0)/mx*L),ld=Math.max(.05,b.m/mx*L);const off=(b.shape==='hull'?b.w/2:b.shape==='box'?b.w/2:b.shape==='cylH'?b.L/2:b.r)+1.2;const X=v.x+b.x;
+   b.ar.up.position.set(X-off,cy,b.z+.5);b.ar.up.userData.s.scale.y=lu;b.ar.up.userData.s.position.y=lu/2;b.ar.up.userData.c.position.y=lu;b.ar.up.visible=(b.up||0)>0.5;
+   b.ar.dn.position.set(X+off,cy,b.z+.5);b.ar.dn.userData.s.scale.y=ld;b.ar.dn.userData.s.position.y=ld/2;b.ar.dn.userData.c.position.y=ld}}}
+ for(const d of st.drops){if(d.t<=0)continue;d.t-=dt;d.v.y-=60*dt;d.m.position.addScaledVector(d.v,dt);if(d.t<=0)d.m.visible=false}
+ for(const r of st.rings){if(r.t>1)continue;r.t+=dt;const s=1+r.t*6;r.m.scale.set(s,s,s);r.m.material.opacity=Math.max(0,.8-r.t*.8);if(r.t>1)r.m.visible=false}
+ if(st.fishes){const v=sim.v[0];st.fishes.forEach(F=>{const x=Math.sin(t*F.s*.4+F.ph)*v.w*.38;const dx=Math.cos(t*F.s*.4+F.ph);F.f.position.set(v.x+x,(v.floor||0)+F.y+Math.sin(t*2+F.ph)*.4,-v.d*.25);F.f.rotation.y=dx>0?0:Math.PI})}
+ const yaw=st.yaw+Math.sin(t*.25)*.04,p=st.pitch;st.cam.position.set(st.target.x+Math.sin(yaw)*Math.cos(p)*st.dist,st.target.y+Math.sin(p)*st.dist,Math.cos(yaw)*Math.cos(p)*st.dist);st.cam.lookAt(st.target);
+ st.tickSalt&&st.tickSalt(dt);GL.render(st.scene,st.cam)};
+/* ---- 2D fallback (side view canvas) ---- */
+Stage.prototype.init2D=function(){const cv=this.cv=document.createElement('canvas');cv.className='gl two';this.host.appendChild(cv);this.x2=cv.getContext('2d')};
+const COL2={block:'#d99a55',cubes:'#9bd36a',log:'#8a5a2b',coin:'#f2c94c',ball:'#ff5d73',stone:'#8d8f99',apple:'#e63946',candle:'#ffc8dd',ice:'#cff4ff',key:'#b8c2cc',marble:'#5ec8ff',duck:'#ffd23f',egg:'#f6e3c6',clay:'#ff8a4c',hull:'#ff8a4c',sub:'#ffc727',crown:'#f2c94c',berg:'#eaf8ff',nail:'#9aa3ad',sponge:'#ffe66d',bottle:'#9be3ff'};
+Stage.prototype.draw2D=function(){const x=this.x2,W=this.cv.width,H=this.cv.height,sim=this.sim;const B=this.bounds();const pad=.12;const sx=W*(1-2*pad)/Math.max(B.x1-B.x0,B.h*1.2*W/H*.8);const s=Math.min(sx,H*.8/B.h);const ox=W/2-(B.x0+B.x1)/2*s,oy=H*.92;const X=v=>ox+v*s,Y=v=>oy-v*s;
+ const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,this.cfg.sky||'#8fd3ff');g.addColorStop(1,this.cfg.sky2||'#fff4e0');x.fillStyle=g;x.fillRect(0,0,W,H);x.fillStyle='#e9b97a';x.fillRect(0,oy,W,H-oy);
+ for(const v of sim.v){const hw=v.shape==='cyl'?v.r:v.w/2;const c=v.water||0x2fa4ff;x.fillStyle='#'+(typeof c==='number'?c.toString(16).padStart(6,'0'):'2fa4ff')+'88';x.fillRect(X(v.x-hw),Y(v.level),2*hw*s,(v.level-(0))*s);x.strokeStyle='#5d6d8a';x.lineWidth=3*DPR;x.strokeRect(X(v.x-hw),Y(v.h),2*hw*s,v.h*s);
+  if(v.ticks){x.fillStyle='#1d3d6b';x.font=`900 ${11*DPR}px Arial`;for(let ml=v.ticks.step;ml<=v.ticks.max;ml+=v.ticks.step){const yy=Y(ml/v.area);x.fillRect(X(v.x-hw),yy,8*DPR,2*DPR);if(ml%50===0)x.fillText(ml,X(v.x-hw)+10*DPR,yy+4*DPR)}}
+  if(v.zone){x.fillStyle='rgba(61,255,138,.25)';x.fillRect(X(v.x-hw),Y(v.zone[1]),2*hw*s,(v.zone[1]-v.zone[0])*s);x.strokeStyle='#1f8f57';x.strokeRect(X(v.x-hw),Y(v.zone[1]),2*hw*s,(v.zone[1]-v.zone[0])*s)}
+  if(v.label){x.fillStyle='#27324a';x.font=`900 ${14*DPR}px Arial`;x.textAlign='center';x.fillText(v.label,X(v.x),Y(v.h)-8*DPR);x.textAlign='left'}}
+ for(const b of sim.b){const v=sim.v[b.vi];const cx=X(v.x+b.x);const by=Y(b.y);const col=b.col2d||COL2[b.look]||'#d99a55';x.fillStyle=typeof b.col==='number'?'#'+b.col.toString(16).padStart(6,'0'):col;x.strokeStyle='#27324a';x.lineWidth=2*DPR;x.beginPath();
+  if(b.shape==='sphere'){x.arc(cx,Y(b.y+b.r),b.r*s,0,7)}else if(b.shape==='ellip'){x.ellipse(cx,Y(b.y+b.c),b.r*s,b.c*s,0,0,7)}else if(b.shape==='cylH'){x.rect(cx-b.L/2*s,Y(b.y+2*b.r),b.L*s,2*b.r*s)}else if(b.shape==='cylV'){x.rect(cx-b.r*s,Y(b.y+b.h),2*b.r*s,b.h*s)}else if(b.shape==='hull'){x.moveTo(cx-b.w/2*s,Y(b.y+b.h));x.lineTo(cx-b.w/2*s,by);x.lineTo(cx+b.w/2*s,by);x.lineTo(cx+b.w/2*s,Y(b.y+b.h));x.lineTo(cx+(b.w/2-.4)*s,Y(b.y+b.h));x.lineTo(cx+(b.w/2-.4)*s,Y(b.y+.4));x.lineTo(cx-(b.w/2-.4)*s,Y(b.y+.4));x.lineTo(cx-(b.w/2-.4)*s,Y(b.y+b.h));x.closePath()}else{x.rect(cx-b.w/2*s,Y(b.y+b.h),b.w*s,b.h*s)}
+  x.fill();x.stroke();if(b.cargoN){x.fillStyle='#c98d4a';const cs=b.cargoS||1.6;for(let i=0;i<b.cargoN;i++){const col=i%4,row=Math.floor(i/4);x.fillRect(cx-b.w/2*s+(.6+col*cs*1.1)*s,Y(b.y+.4+(row+1)*cs),cs*s,cs*s)}}
+  if(b.emo){x.font=`${Math.max(12,b.H*s*.55)}px Arial`;x.textAlign='center';x.textBaseline='middle';x.fillText(b.emo,cx,Y(b.y+b.H/2));x.textAlign='left';x.textBaseline='alphabetic'}
+  if(b.arrows&&!b.held){const mx=b.arMax||b.m*1.6,L=(b.arScale||6)*s;const cy=Y(b.y+b.H/2);const off=((b.w||b.L||2*b.r)/2+1.2)*s;const ar=(xx,len,col,dir)=>{x.strokeStyle=col;x.fillStyle=col;x.lineWidth=5*DPR;x.beginPath();x.moveTo(xx,cy);x.lineTo(xx,cy-dir*len);x.stroke();x.beginPath();x.moveTo(xx-8*DPR,cy-dir*len);x.lineTo(xx+8*DPR,cy-dir*len);x.lineTo(xx,cy-dir*(len+12*DPR));x.fill()};if((b.up||0)>.5)ar(cx-off,(b.up)/mx*L,'#1e90ff',1);ar(cx+off,b.m/mx*L,'#ff3b3b',-1)}}};
+/* hull cargo crates (3D) */
+Stage.prototype.setCargo=function(b,n,each,size){b.cargoN=n;b.cargoS=size;b.m=b.m0+n*each;if(this.mode!=='3d')return;const G=b.g.userData.crates;while(G.children.length)G.remove(G.children[0]);const cs=size,per=Math.max(1,Math.floor((b.w-1)/(cs*1.05))),perz=Math.max(1,Math.floor((b.d-1)/(cs*1.05)));const geo=new THREE.BoxGeometry(cs,cs,cs);const cols=[0x2fb872,0x2e86ff,0xff9b3d,0xff6a8d,0x7d4fe8,0xffd23f];
+ for(let i=0;i<n;i++){const layer=Math.floor(i/(per*perz)),r=i%(per*perz),ix=r%per,iz=Math.floor(r/per);const m=MS(geo,mat(cols[i%6],{shine:20}),(ix-(per-1)/2)*cs*1.05,(b.t||.35)+cs/2+layer*cs*1.02,(iz-(perz-1)/2)*cs*1.05);G.add(m)}};
+
+Stage.prototype.sprinkle=function(vi,n){if(this.mode!=='3d')return;const v=this.sim.v[vi||0];if(!this.salt){this.salt=[];const g=new THREE.BoxGeometry(.18,.18,.18),m=mat(0xffffff,{shine:100});for(let i=0;i<40;i++){const p=MS(g,m);p.visible=false;this.scene.add(p);this.salt.push({m:p,t:0})}}let k=0;for(const p of this.salt){if(p.t>0)continue;const R=(v.r||v.w/2)*.6;p.m.position.set(v.x+(Math.random()-.5)*R,v.h+2+Math.random()*2,(Math.random()-.5)*R);p.t=2.2;p.m.visible=true;if(++k>=(n||12))break}};
+Stage.prototype.tickSalt=function(dt){if(!this.salt)return;const v=this.sim.v[0];for(const p of this.salt){if(p.t<=0)continue;p.t-=dt;const inW=p.m.position.y<v.level;p.m.position.y-=dt*(inW?4:14);p.m.rotation.x+=dt*3;if(p.t<=0||p.m.position.y<.2){p.t=0;p.m.visible=false}}};
+
+/* ===================== activity types ===================== */
+const T={};
+const TANK={w:30,d:18,h:22,level0:12,rho:1};
+function stg(body,cfg){const w=document.createElement('div');w.className='stwrap';w.innerHTML='<div class="stg"></div><div class="hud"></div>';body.appendChild(w);const s=new Stage(w.firstChild,cfg);s.hud=w.lastChild;return s}
+function panel(body,id){const p=document.createElement('div');p.className='panel';if(id)p.id=id;body.appendChild(p);return p}
+function numQ(el,o){el.classList.remove('done');el.innerHTML=`<div class="q">${o.spark?'<span class="spark">⚡ JEE spark</span> ':''}${o.q}</div><div class="numrow"><input class="num" type="text" inputmode="decimal" autocomplete="off" aria-label="Your answer" maxlength="6"><span class="unit">${o.unit||''}</span><button class="btn g chk" type="button">Check ✔</button></div>`;
+ const inp=$('.num',el),b=$('.chk',el);let tries=0;
+ const go=()=>{const v=parseFloat(String(inp.value).replace(',','.'));if(isNaN(v)){o.c.miss('Type a number first!');inp.focus();return}
+  if(o.any||Math.abs(v-o.ans)<=(o.tol||0)){inp.disabled=true;b.disabled=true;el.classList.add('done');o.ok(v)}else{tries++;inp.classList.remove('shake');void inp.offsetWidth;inp.classList.add('shake');o.c.miss((tries>=2&&o.hint2?o.hint2:o.hint?'💡 '+o.hint:'Not quite. Try again!'));if(tries>=3&&o.reveal!==false)setFb(o.c.host,'hint','The answer is '+o.ans+(o.unit?' '+o.unit:'')+'. Type it in and press Check.')}};
+ b.onclick=go;inp.onkeydown=e=>{if(e.key==='Enter')go()};if(o.focus!==false)setTimeout(()=>{try{inp.focus({preventScroll:true})}catch(e){}},50)}
+function pick(el,q,opts,cb,cls){el.innerHTML=`<div class="q">${q}</div><div class="opts ${cls||''}">${opts.map((o,i)=>`<button class="opt" type="button" data-i="${i}">${o}</button>`).join('')}</div>`;el.onclick=e=>{const b=e.target.closest('.opt');if(!b||el.dataset.lock==='1')return;cb(+b.dataset.i,b)}}
+function nextBtn(el,label,fn){const b=document.createElement('button');b.type='button';b.className='btn o nx';b.textContent=label||'Next ▶';b.onclick=()=>{b.remove();fn()};el.appendChild(b);setTimeout(()=>b.scrollIntoView({behavior:'smooth',block:'nearest'}),200);return b}
+const FS=['🛟 Float','⚓ Sink'];
+const pf=r=>r==='float'?'floats':r==='sink'?'sinks':'hovers';
+
+/* ---- predict then test in the 3D tank ---- */
+T.predict=(body,A,c)=>{const st=stg(body,{vessels:[Object.assign({},TANK)]});const items=A.items.map(k=>mk(k));
+ const tray=document.createElement('div');tray.className='tray';tray.innerHTML=items.map((o,i)=>`<span class="chip" data-i="${i}">${o.emo} ${o.name}</span>`).join('');body.insertBefore(tray,st.host.parentNode);
+ const P=panel(body);let i=0,right=0;const slots=A.slots||[-9,0,9,-4.5,4.5,-11,6,11];const live=[];
+ st.hud.innerHTML=`<span>💧 Fresh water</span><span id="hs">Tested 0 / ${items.length}</span>`;
+ function ask(){if(i>=items.length){done();return}const o=items[i];$$('.chip',tray).forEach((x,j)=>x.classList.toggle('cur',j===i));
+  P.dataset.lock='0';pick(P,`<span class="big">${o.emo}</span> <b>${o.name}</b> <span class="muted">(${Math.round(o.m)} g)</span><br>Will it float or sink?`,FS,(k,btn)=>{P.dataset.lock='1';btn.classList.add('chosen');const guess=k?'sink':'float';
+   if(live.length>=4){st.removeBody(live.shift())}
+   const isH=o.shape==='hull';const v=st.sim.v[0];const b=st.add(Object.assign({},o,{x:slots[i%slots.length],z:(i%3-1)*3,y:isH?v.level0+1.5:v.h+2,vy:isH?0:-5,arrows:false}));live.push(b);snd.pop();
+   b.onSettle=r=>{const ok=r===guess;const chip=$$('.chip',tray)[i];chip.classList.add(ok?'ok':'surp');chip.textContent=`${o.emo} ${o.name} ${r==='float'?'🛟':'⚓'}`;
+    if(ok){right++;c.good(`Correct! The ${o.name.toLowerCase()} ${pf(r)}. ${o.why}`)}else{snd.bloop();setFb(c.host,'hint',`Surprise! It ${pf(r)}. ${o.why} Good scientists change their minds with evidence!`)}
+    i++;$('#hs',st.hud).textContent=`Tested ${i} / ${items.length}`;nextBtn(P,i<items.length?'Next object ▶':'See results ▶',ask)}})}
+ function done(){$$('.chip',tray).forEach(x=>x.classList.remove('cur'));const sum=`You predicted ${right} of ${items.length} correctly.`;
+  if(A.then){P.dataset.lock='0';pick(P,`${sum}<br><b>${A.then.q}</b>`,A.then.opts,(k,btn)=>{if(k===A.then.ans){btn.classList.add('right');P.dataset.lock='1';c.finish(A.win)}else{btn.classList.add('wrong');c.miss(A.then.hint)}})}
+  else{P.innerHTML=`<div class="q">${sum} ${right===items.length?'Amazing!':'Every surprise taught you something new!'}</div>`;c.finish(A.win)}}
+ ask()};
+
+/* ---- sort (drag & drop or tap) ---- */
+T.sort=(body,A,c)=>{const items=shuffle(A.items,A.items.length*7+3);
+ body.innerHTML+=`<div class="sortw"><div class="pool">${items.map((it,i)=>`<button class="card2" type="button" data-b="${it[2]}" data-i="${i}"><span class="e">${it[0]}</span><span>${it[1]}</span></button>`).join('')}</div><div class="bins b${A.bins.length}">${A.bins.map(b=>`<div class="bin" data-b="${b[0]}" role="button" tabindex="0"><div class="bt">${b[1]}</div><div class="bi"></div></div>`).join('')}</div></div>`;
+ const root=$('.sortw',body);let left=items.length;
+ DnD(root,{item:'.card2',zone:'.bin',onDrop:(it,z)=>{if(it.dataset.locked)return;if(it.dataset.b===z.dataset.b){it.dataset.locked='1';it.classList.add('placed');$('.bi',z).appendChild(it);snd.ok();left--;confetti(14,{x:z.getBoundingClientRect().left+z.offsetWidth/2,y:z.getBoundingClientRect().top});
+   if(left===0)c.finish(A.win);else setFb(c.host,'good',`Yes! ${it.textContent.trim()} goes there. ${left} left.`,false)}else{z.classList.add('shake');setTimeout(()=>z.classList.remove('shake'),500);c.miss(A.hint)}}})};
+
+/* ---- cube detective ---- */
+const CUBE=Math.cbrt(10);
+T.cubes=(body,A,c)=>{const st=stg(body,{vessels:[{w:26,d:16,h:18,level0:10,rho:1}],ty:.6});const P=panel(body);let r=0,b=null;
+ st.hud.innerHTML=`<span>💧 1 water cube = ${WATER} g</span><span id="hr">Block 1 / ${A.rounds.length}</span>`;
+ function round(){const R=A.rounds[r];if(b)st.removeBody(b);const n=R.nx*R.ny*R.nz;
+  b=st.add({look:'cubes',shape:'box',s:CUBE,nx:R.nx,ny:R.ny,nz:R.nz,w:R.nx*CUBE,h:R.ny*CUBE,d:R.nz*CUBE,m:R.m,col:R.col,col2:R.col2,face:true,held:true,x:0,y:st.sim.v[0].level0+2.5,emo:'🧊'});b.ry=.5;
+  $('#hr',st.hud).textContent=`Block ${r+1} / ${A.rounds.length}`;
+  numQ(P,{c,q:`<b>${R.name}</b> weighs <b>${R.m} g</b>. How many cubes is it made of? <span class="muted">(Drag the 3D view to see all sides.)</span>`,ans:n,unit:'cubes',hint:`Count the rows: ${R.nx} along × ${R.ny} up × ${R.nz} deep.`,ok:()=>{snd.ok();
+   const p2=document.createElement('div');p2.className='panel sub';P.appendChild(p2);
+   numQ(p2,{c,q:`${R.m} g shared among ${n} cubes. How many grams in EACH cube?`,ans:R.m/n,unit:'g per cube',hint:`${R.m} ÷ ${n} = ?`,ok:gpc=>{snd.ok();
+    const p3=document.createElement('div');p3.className='panel sub';P.appendChild(p3);
+    pick(p3,`Each cube is ${gpc} g. A water cube is ${WATER} g. Predict!`,FS,(k,btn)=>{p3.dataset.lock='1';btn.classList.add('chosen');const want=gpc<WATER?'float':'sink';b.held=false;b.vy=-3;snd.pop();
+     b.onSettle=res=>{if((k?'sink':'float')===res)c.good(`Yes! ${gpc} g per cube is ${gpc<WATER?'LESS':'MORE'} than ${WATER} g, so it ${pf(res)}.`);else{snd.bloop();setFb(c.host,'hint',`It ${pf(res)}! ${gpc} is ${gpc<WATER?'less':'more'} than ${WATER}, so it is ${gpc<WATER?'lighter':'heavier'} than water for its size.`)}
+      r++;if(r<A.rounds.length)nextBtn(p3,'Next block ▶',()=>{P.innerHTML='';round()});else c.finish(A.win)}})}})}})}
+ round()};
+
+/* ---- tap in order ---- */
+T.order=(body,A,c)=>{const items=A.items.map(it=>({e:it[0],n:it[1],k:it[2],g:it[3],d:it[3]/it[2]}));const order=[...items].sort((a,b)=>b.d-a.d);const sh=shuffle(items,11);let k=0;
+ body.innerHTML+=`<div class="ordw">${sh.map((it,i)=>`<button class="ocard" type="button" data-n="${it.n}"><span class="e">${it.e}</span><b>${it.n}</b><span class="cb">${'🟫'.repeat(Math.min(it.k,10))}</span><span>${it.k} cubes · ${it.g} g</span><span class="rk"></span></button>`).join('')}</div><div class="olist" id="ol">Your order: </div>`;
+ $('.ordw',body).onclick=e=>{const b=e.target.closest('.ocard');if(!b||b.disabled)return;const it=order[k];if(b.dataset.n===it.n){b.disabled=true;b.classList.add('placed');$('.rk',b).textContent=`#${k+1} · ${it.d} g per cube ${it.d<WATER?'🛟':'⚓'}`;$('#ol',body).innerHTML+=`<span class="tag">${it.e} ${it.d}</span>`;k++;snd.ok();if(k===order.length)c.finish(A.win);else setFb(c.host,'good',`Yes! ${it.n}: ${it.g} ÷ ${it.k} = ${it.d} g per cube.`,false)}
+  else{const t=items.find(x=>x.n===b.dataset.n);c.miss(`Not yet. ${t.n}: ${t.g} ÷ ${t.k} = ${t.d} g per cube. Find a block with MORE grams per cube.`)}}};
+
+/* ---- build a float ---- */
+T.build=(body,A,c)=>{const st=stg(body,{vessels:[Object.assign({},TANK,{level0:11})],ty:.55});const P=panel(body);let n=3,b=null,tested={};
+ P.innerHTML=`<div class="q">Foam cubes: <b id="bn">3</b></div><input type="range" min="1" max="10" step="1" value="3" id="bs" class="rng" aria-label="Number of foam cubes"><div class="calc" id="bc"></div><div class="row"><button class="btn g" type="button" id="bt">🧪 Test it!</button></div><div id="bq"></div>`;
+ const calc=()=>{const W=A.robo+n*A.foam;$('#bc',P).innerHTML=`<span>⬇️ Weight: ${A.robo} + ${n}×${A.foam} = <b>${W} g</b></span><span>⬆️ Can push aside: ${n}×${WATER} = <b>${n*WATER} g</b></span>`};
+ const show=()=>{if(b)st.removeBody(b);b=st.add({look:'cubes',shape:'box',s:CUBE,nx:n,ny:1,nz:1,w:n*CUBE,h:CUBE,d:CUBE,m:A.robo+n*A.foam,col:0xfff3a8,col2:0xffe066,robo:true,held:true,x:0,y:st.sim.v[0].level0+2,emo:'🤖',arrows:true,arMax:120,arScale:7});st.addArrows(b)};
+ $('#bs',P).oninput=e=>{n=+e.target.value;$('#bn',P).textContent=n;calc();show();snd.pop()};calc();show();
+ st.hud.innerHTML=`<span>🤖 Robo: ${A.robo} g</span><span>🧊 foam cube: ${A.foam} g</span>`;
+ $('#bt',P).onclick=()=>{if(!b||!b.held)show();b.held=false;b.vy=-4;$('#bt',P).disabled=true;b.onSettle=r=>{$('#bt',P).disabled=false;tested[n]=r;
+   if(r==='float'&&n===A.ans){c.good(`It floats with ${n} cubes!`);numQ($('#bq',P),{c,q:'So what is the SMALLEST number of foam cubes that keeps Robo afloat?',ans:A.ans,unit:'cubes',hint:'Look at your tests: which was the smallest number that floated?',ok:()=>c.finish(A.win)})}
+   else if(r==='float')setFb(c.host,'hint',`It floats with ${n} cubes! But can you use FEWER cubes? Engineers save material.`);
+   else c.miss(`Splash! ${n} cubes sink: weight ${A.robo+n*A.foam} g is more than ${n*WATER} g of push. Add more cubes.`)}}};
+
+/* ---- quiz (typed numbers, a few MCQs) ---- */
+T.quiz=(body,A,c)=>{let r=0;const P=panel(body);if(A.table)body.insertBefore(Object.assign(document.createElement('div'),{className:'tblw',innerHTML:`<table class="tbl">${A.table.map((row,i)=>`<tr>${row.map(x=>i?`<td class="${x==='floated'?'fl':x==='sank'?'sk':''}">${x==='floated'?'🛟 floated':x==='sank'?'⚓ sank':x}</td>`:`<th>${x}</th>`).join('')}</tr>`).join('')}</table>`}),P);
+ const prog=document.createElement('div');prog.className='qprog';body.insertBefore(prog,P);
+ function q(){prog.innerHTML=A.rounds.map((x,i)=>`<span class="${i<r?'ok':i===r?'on':''}">${i<r?'⭐':i+1}</span>`).join('');const R=A.rounds[r];const nx=()=>{r++;if(r<A.rounds.length){setTimeout(()=>{q()},900)}else{prog.innerHTML=A.rounds.map(()=>'<span class="ok">⭐</span>').join('');c.finish(A.win)}};
+  if(R.kind==='mcq'){P.dataset.lock='0';pick(P,`${R.spark?'<span class="spark">⚡ JEE spark</span> ':''}${R.q}`,R.opts,(k,btn)=>{if(k===R.ans){btn.classList.add('right');P.dataset.lock='1';c.good('Correct! '+(R.why||''));nx()}else{btn.classList.add('wrong');c.miss('💡 '+R.hint)}},'col')}
+  else numQ(P,{c,q:R.q,ans:R.ans,unit:R.unit,hint:R.hint,spark:R.spark,ok:()=>{c.good('Correct! Great thinking.');nx()}});setTimeout(()=>say(R.q),150)}
+ q()};
+
+/* ---- clay: ball to boat ---- */
+const CLAY=[{n:'Ball',e:'⚪',shape:'sphere',r:2.29},{n:'Thick pot',e:'🏺',shape:'hull',w:4.5,d:4.5,h:3,t:.8},{n:'Bowl',e:'🥣',shape:'hull',w:6,d:6,h:2.8,t:.45},{n:'Boat',e:'🛶',shape:'hull',w:8,d:6.5,h:2.4,t:.35},{n:'Wide boat',e:'🚤',shape:'hull',w:10,d:7,h:2,t:.3}];
+T.clay=(body,A,c)=>{const st=stg(body,{vessels:[{w:24,d:14,h:16,level0:9,rho:1}],ty:.5});const P=panel(body);let k=0,b=null;const res={};
+ P.innerHTML=`<div class="shapes">${CLAY.map((s,i)=>`<button class="shp ${i?'':'on'}" type="button" data-i="${i}"><span class="e">${s.e}</span>${s.n}<span class="r"></span></button>`).join('')}</div><div class="row"><button class="btn g" type="button" id="cd">💧 Drop it in!</button></div><div id="cq"></div>`;
+ st.hud.innerHTML=`<span>🟠 Clay: 90 g</span><span id="cu">⬆️ upthrust: 0 g</span>`;
+ const make=()=>{if(b)st.removeBody(b);const s=CLAY[k];const v=st.sim.v[0];b=st.add(Object.assign({look:s.shape==='sphere'?'clay':'hull',m:90,x:0,held:true,y:v.level0+2,emo:'🟠',arrows:true,arMax:140,arScale:8,col:0xff8a4c},s));b.matV=50;st.addArrows(b)};make();
+ $('.shapes',P).onclick=e=>{const t=e.target.closest('.shp');if(!t)return;k=+t.dataset.i;$$('.shp',P).forEach(x=>x.classList.toggle('on',x===t));make();snd.pop()};
+ st.cfg.onTick=()=>{if(b)$('#cu',st.hud).textContent=`⬆️ upthrust: ${Math.round(b.up||0)} g · ⬇️ weight: 90 g`};
+ $('#cd',P).onclick=()=>{if(!b.held)make();const v=st.sim.v[0];if(b.shape==='hull'){b.y=v.level0+1}b.held=false;b.vy=-3;snd.pop();const kk=k;$('#cd',P).disabled=true;
+  b.onSettle=r=>{$('#cd',P).disabled=false;res[kk]=r;const t=$$('.shp',P)[kk];$('.r',t).textContent=r==='float'?'🛟':'⚓';t.classList.add(r==='float'?'fl':'sk');
+   const cap=CLAY[kk].shape==='hull'?Math.round(CLAY[kk].w*CLAY[kk].d*CLAY[kk].h):50;
+   if(r==='float')c.good(`The ${CLAY[kk].n.toLowerCase()} floats! It can push aside up to ${cap} g of water, more than its 90 g weight.`);else{snd.bloop();setFb(c.host,'oops',`The ${CLAY[kk].n.toLowerCase()} sinks. It can only push aside about ${cap} g of water, less than 90 g.`)}
+   if(Object.keys(res).length===CLAY.length&&!$('#cq',P).dataset.on){$('#cq',P).dataset.on=1;const q1=$('#cq',P);
+    numQ(q1,{c,q:'The clay weighs 90 g. When the boat floats still, the forces are balanced. How big is the UPTHRUST?',ans:90,unit:'g',hint:'Balanced means upthrust = weight.',ok:()=>{snd.ok();const q2=document.createElement('div');q2.className='panel sub';P.appendChild(q2);
+     numQ(q2,{c,spark:true,q:'The bowl can push aside at most 100 g of water. The bowl weighs 90 g. How many grams of marbles can it carry before it sinks?',ans:10,unit:'g',hint:'100 − 90 = ?',ok:()=>c.finish(A.win)})}})}
+   else if(Object.keys(res).length<CLAY.length)setTimeout(()=>{if(!c.done)setFb(c.host,'teach',`Tested ${Object.keys(res).length} of 5 shapes. Pick another shape!`,false)},2600)}}};
+
+/* ---- fair test planner ---- */
+T.fair=(body,A,c)=>{let r=0;const P=panel(body);
+ function round(){const R=A.rounds[r];P.innerHTML=`<div class="q">${R.q}</div>${R.vars.map((v,i)=>`<div class="var" data-i="${i}"><span>${v[0]}</span><span class="tg"><button type="button" class="t" data-v="1">🔄 Change</button><button type="button" class="t" data-v="0">🔒 Keep same</button></span></div>`).join('')}<div class="row"><button class="btn g" id="fc" type="button">Check my plan ✔</button></div>`;
+  P.onclick=e=>{const t=e.target.closest('.t');if(t){$$('.t',t.parentNode).forEach(x=>x.classList.toggle('on',x===t));snd.pop()}};
+  $('#fc',P).onclick=()=>{const rows=$$('.var',P);if(rows.some(x=>!$('.t.on',x))){c.miss('Choose Change or Keep same for every row.');return}
+   const bad=rows.filter((x,i)=>+$('.t.on',x).dataset.v!==R.vars[i][1]);if(bad.length){bad.forEach(x=>{x.classList.add('shake');setTimeout(()=>x.classList.remove('shake'),500)});c.miss(A.hint);return}
+   r++;if(r<A.rounds.length){c.good('Fair test! Only one thing changes.');nextBtn(P,'Next question ▶',round)}else c.finish(A.win)}}
+ round()};
+
+/* ---- measuring jar displacement ---- */
+const JAR_R=Math.sqrt(50/Math.PI);
+T.displace=(body,A,c)=>{const st=stg(body,{vessels:[{shape:'cyl',r:JAR_R,h:14,level0:6,rho:1,ticks:{max:700,step:10}}],dist:1.35,ty:.5,aspect:.85,maxH:400});const P=panel(body);let r=0,b=null;
+ st.hud.innerHTML=`<span class="read" id="rd">📏 300 ml</span><span id="dr">Test 1 / ${A.rounds.length}</span>`;
+ st.cfg.onTick=()=>{$("#rd",st.hud).textContent=`📏 ${Math.round(st.sim.level(0)*10)*5} ml`};
+ function round(){const R=A.rounds[r];if(b)st.removeBody(b);b=null;$('#dr',st.hud).textContent=`Test ${r+1} / ${A.rounds.length}`;
+  P.innerHTML=`<div class="q">Start: <b>300 ml</b>. Next: <span class="big">${R.o.emo}</span> <b>${R.o.name}</b></div><div class="row"><button class="btn g" type="button" id="dd">💧 Drop it in!</button></div><div id="dq"></div>`;
+  $('#dd',P).onclick=()=>{$('#dd',P).disabled=true;b=st.add(Object.assign({x:0,y:15,vy:-5},R.o));snd.pop();
+   b.onSettle=()=>{let w=0;const conv=()=>{if(Math.abs(st.sim.level(0)*50-(300+R.rise))>.6&&w++<40){setTimeout(conv,100);return}ask()};setTimeout(conv,200);const ask=()=>{numQ($('#dq',P),{c,q:`The jar now reads <b>${300+R.rise} ml</b>. ${R.q}`,ans:R.rise,unit:'ml',hint:`New level − start level = ${300+R.rise} − 300.`,ok:()=>{
+     const fin=()=>{r++;if(r<A.rounds.length){c.good('Correct!');nextBtn(P,'Next test ▶',round)}else c.finish(A.win)};
+     if(R.after){c.good(`Yes, ${R.rise} ml: exactly its weight in grams!`);const q2=document.createElement('div');q2.className='panel sub';P.appendChild(q2);numQ(q2,{c,spark:true,q:R.after.q,ans:R.after.ans,unit:'ml',hint:R.after.hint,ok:fin})}else fin()}})}}}}
+ round()};
+
+/* ---- crown puzzle ---- */
+T.crown=(body,A,c)=>{const st=stg(body,{vessels:[{shape:'cyl',r:JAR_R,h:12,level0:6,rho:1,x:-6.5,label:'Crown A',ticks:{max:600,step:10}},{shape:'cyl',r:JAR_R,h:12,level0:6,rho:1,x:6.5,label:'Crown B',ticks:{max:600,step:10}}],dist:1.3,ty:.55});const P=panel(body);
+ st.hud.innerHTML=`<span id="ra">A: 300 ml</span><span id="rb">B: 300 ml</span>`;st.cfg.onTick=()=>{$('#ra',st.hud).textContent=`A: ${Math.round(st.sim.level(0)*10)*5} ml`;$('#rb',st.hud).textContent=`B: ${Math.round(st.sim.level(1)*10)*5} ml`};
+ P.innerHTML=`<div class="q">Both jars start at <b>300 ml</b>. Both crowns weigh <b>386 g</b>.</div><div class="row"><button class="btn g" id="cd2" type="button">👑 Drop both crowns!</button></div><div id="c1"></div><div id="c2" class="panel sub" hidden></div><div id="c3" class="panel sub" hidden></div>`;
+ $('#cd2',P).onclick=()=>{$('#cd2',P).disabled=true;const hA=20/(Math.PI*4),hB=40/(Math.PI*2.4*2.4);let n=0;
+  const a=st.add({look:'crown',shape:'cylV',r:2,h:hA,m:386,vi:0,x:0,y:13,vy:-4,emo:'👑'}),bb=st.add({look:'crown',shape:'cylV',r:2.4,h:hB,m:386,vi:1,x:0,y:13,vy:-4,emo:'👑',col:0xe8c060});snd.pop();
+  const go=()=>{if(++n<2)return;setTimeout(()=>{numQ($('#c1',P),{c,q:'Crown A: how many ml did the water rise?',ans:20,unit:'ml',hint:'Read jar A, then subtract 300.',ok:()=>{snd.ok();$('#c2',P).hidden=false;numQ($('#c2',P),{c,q:'Crown B: how many ml did the water rise?',ans:40,unit:'ml',hint:'Read jar B, then subtract 300.',ok:()=>{snd.ok();const p=$('#c3',P);p.hidden=false;
+    pick(p,'Same weight, but different volume. Real gold is MORE tightly packed. Which crown is the fake?',['👑 Crown A (20 cm³)','👑 Crown B (40 cm³)'],(k,btn)=>{if(k===1){btn.classList.add('right');p.dataset.lock='1';c.finish(A.win)}else{btn.classList.add('wrong');c.miss('Crown A packs 386 g into only 20 cm³. Crown B needs 40 cm³ for the same 386 g. Which is less packed?')}})}})}})},300)};
+  a.onSettle=go;bb.onSettle=go}};
+
+/* ---- egg in salt water ---- */
+T.egg=(body,A,c)=>{const st=stg(body,{vessels:[{shape:'cyl',r:4,h:14,level0:8.5,rho:1,water:0x5bbcff}],dist:1.3,ty:.5,aspect:.85});const P=panel(body);let n=0,seen={};
+ const SP=.03,ED=1+(A.ans-.5)*SP;const egg=st.add({look:'egg',shape:'ellip',r:2.2,c:2.9,m:+(ED*bodyV({shape:'ellip',r:2.2,c:2.9})).toFixed(2),x:0,y:0,face:true,emo:'🥚',dragK:.45});
+ const stat=()=>{const v=st.sim.v[0];const top=egg.y+egg.H>v.level-.05&&egg.y>.3;return egg.y<.25?'⚓ on the bottom':top?'🛟 floating!':'↕️ moving…'};
+ st.hud.innerHTML=`<span id="es">🧂 0 spoons</span><span id="eg">🥚 on the bottom</span>`;st.cfg.onTick=()=>{$('#eg',st.hud).textContent='🥚 '+stat()};
+ P.innerHTML=`<div class="q">Spoons of salt: <b id="en">0</b></div><input type="range" class="rng salt" min="0" max="10" step="1" value="0" id="er" aria-label="Spoons of salt"><div class="muted center">Tip: try each number. Watch the egg!</div><div id="eq"></div>`;
+ const set=v=>{const up=v>n;n=v;$('#en',P).textContent=n;$('#es',st.hud).textContent=`🧂 ${n} spoons`;st.sim.v[0].rho=1+SP*n;const t=Math.min(1,n/10);const col=new (THREE?THREE.Color:Object)();if(THREE){col.set(0x5bbcff).lerp(new THREE.Color(0xd8f1ff),t*.8);st.setWater(0,col.getHex(),.42+t*.25)}else st.sim.v[0].water=0x5bbcff;if(up){st.sprinkle(0,10);snd.pop()}seen[n]=1;
+  if(Object.keys(seen).length>=4&&!$('#eq',P).dataset.on&&n>=A.ans){$('#eq',P).dataset.on=1;setTimeout(ask,1600)}};
+ $('#er',P).oninput=e=>set(+e.target.value);
+ function ask(){numQ($('#eq',P),{c,q:'What is the SMALLEST number of spoons that made the egg float?',ans:A.ans,unit:'spoons',focus:false,hint:'Slide back down one spoon at a time. When does the egg stop floating?',ok:()=>{snd.ok();const p=document.createElement('div');p.className='panel sub';P.appendChild(p);
+  pick(p,'Predict: with 10 spoons, will MORE of the egg poke out of the water than with 6 spoons?',['Yes, more pokes out','No, less pokes out','The same'],(k,btn)=>{p.dataset.lock='1';btn.classList.add('chosen');$('#er',P).value=10;set(10);setTimeout(()=>{if(k===0)c.good('Correct prediction! Saltier water pushes up even harder, so the egg rides higher.');else{snd.bloop();setFb(c.host,'hint','Look: more of the egg pokes out! Saltier water pushes up even harder.')}c.finish(A.win)},2600)})}})}};
+
+/* ---- twin tanks: fresh vs Dead Sea ---- */
+T.twin=(body,A,c)=>{const st=stg(body,{vessels:[{w:14,d:10,h:14,level0:8,rho:1,x:-8.5,label:'Fresh water'},{w:14,d:10,h:14,level0:8,rho:1.24,x:8.5,label:'Dead Sea',water:0x2bc4a8,op:.55}],ty:.5,dist:1.3});const P=panel(body);let r=0,bs=[];
+ st.hud.innerHTML=`<span>💧 Fresh</span><span>🧂 Dead Sea (very salty)</span>`;
+ function round(){const R=A.rounds[r];bs.forEach(x=>st.removeBody(x));bs=[];P.dataset.lock='0';
+  pick(P,R.q,R.opts,(k,btn)=>{P.dataset.lock='1';btn.classList.add('chosen');let n=0;const mkb=vi=>R.o==='boat'?st.add({look:'hull',shape:'hull',w:8,d:5,h:4,m:100,col:0xe63946,col2:0x1d3557,rim:0xffffff,vi,x:0,y:9.2,vy:0,emo:'⛵',face:true}):st.add({look:'egg',shape:'ellip',r:2,c:2.6,m:+(1.07*bodyV({shape:'ellip',r:2,c:2.6})).toFixed(2),vi,x:0,y:15,vy:-4,face:true,emo:'🥚'});
+   bs=[mkb(0),mkb(1)];snd.pop();
+   const done=()=>{if(++n<2)return;const ok=k===R.ans;let extra='';if(R.o==='boat'){const d0=(st.sim.level(0)-bs[0].y),d1=(st.sim.level(1)-bs[1].y);extra=` It sank ${d0.toFixed(1)} cm deep in fresh water but only ${d1.toFixed(1)} cm in the Dead Sea.`}
+    if(ok)c.good('Correct! '+R.why+extra);else{snd.bloop();setFb(c.host,'hint','Look at the tanks! '+R.why+extra)}
+    r++;if(r<A.rounds.length)nextBtn(P,'Next test ▶',round);else setTimeout(()=>c.finish(A.win),1200)};bs.forEach(x=>x.onSettle=done)},'col')}
+ round()};
+
+/* ---- iceberg ---- */
+T.berg=(body,A,c)=>{const st=stg(body,{env:'sea',sky:'#bfe9ff',sky2:'#eaf8ff',vessels:[{w:36,d:14,h:24,level0:17,rho:1.025,water:0x1f6fd1,op:.5}],ty:.5,dist:1.25});const P=panel(body);let g=5,b=null;
+ st.hud.innerHTML=`<span>🌊 Salty sea</span><span id="bg">Your guess: 5 of 10 under</span>`;
+ P.innerHTML=`<div class="q">Layers under the water: <b id="gn">5</b> of 10</div><input type="range" class="rng" min="0" max="10" value="5" id="gr" aria-label="Guess layers under water"><div class="row"><button class="btn g" id="bd" type="button">🧊 Drop the iceberg!</button></div><div id="bq"></div>`;
+ $('#gr',P).oninput=e=>{g=+e.target.value;$('#gn',P).textContent=g;$('#bg',st.hud).textContent=`Your guess: ${g} of 10 under`};
+ $('#bd',P).onclick=()=>{$('#bd',P).disabled=true;$('#gr',P).disabled=true;b=st.add({look:'berg',shape:'box',w:10,h:10,d:8,m:.92*800,x:0,y:st.sim.v[0].level0+1,vy:0,emo:'🧊'});snd.splash(1);
+  b.onSettle=()=>{const under=(st.sim.level(0)-b.y)/b.h*10;const u=Math.round(under);$('#bg',st.hud).textContent=`Real: about ${u} of 10 under!`;
+   if(Math.abs(g-u)<=1)c.good(`Great guess! About ${u} of 10 layers are hidden under the sea.`);else{snd.bloop();setFb(c.host,'hint',`Surprise! About ${u} of 10 layers are under the water. Ice is only a little lighter than sea water.`)}
+   setTimeout(()=>numQ($('#bq',P),{c,spark:true,q:'An iceberg is 50 m tall from top to bottom. About 9 of every 10 parts are under the sea. About how many metres stick out ABOVE the water?',ans:5,unit:'m',hint:'1 of 10 parts is above. One tenth of 50 = 50 ÷ 10.',ok:()=>c.finish(A.win)}),900)}}};
+
+/* ---- cargo loading ---- */
+T.load=(body,A,c)=>{const st=stg(body,{vessels:[Object.assign({},TANK)],ty:.45});const P=panel(body);let b=null,n=0,phase=0,pred=null,maxFloat=0;
+ const boat=()=>{if(b)st.removeBody(b);n=0;const v=st.sim.v[0];b=st.add({look:'hull',shape:'hull',w:12,d:7,h:5,m:100,m0:100,col:0xe63946,col2:0x1d3557,rim:0xffffff,plim:.8,face:true,x:0,y:v.level0-.4,vy:0,emo:'🚢'});b.onFlood=()=>{snd.splash(1);setTimeout(()=>{snd.oops()},300);sank()};st.setCargo(b,0,50,2.6)};boat();
+ st.hud.innerHTML=`<span id="lm">⚖️ 100 g</span><span id="ll">🟡 safe line: OK</span>`;
+ st.cfg.onTick=()=>{if(!b)return;$('#lm',st.hud).textContent=`📦 ${n} · ⚖️ ${b.m} g / 420 g`;const dep=st.sim.level(0)-b.y;$('#ll',st.hud).textContent=b.flooded?'💦 SANK!':dep>b.h*.8+.05?'🟡 above safe line!':'🟡 safe line: OK'};
+ P.innerHTML=`<div id="lp"></div><div class="row" id="lb" hidden><button class="btn g" id="la" type="button">📦 Load a crate (50 g)</button><button class="btn soft" id="lr" type="button">↺ Unload all</button></div><div id="lq"></div>`;
+ numQ($('#lp',P),{c,any:true,q:'Predict first: how many crates can the boat carry before it sinks?',unit:'crates',focus:false,ok:v=>{pred=v;snd.ok();setFb(c.host,'teach',`Prediction saved: ${v}. Now load the crates one by one and watch the water line!`);$('#lb',P).hidden=false}});
+ $('#la',P).onclick=()=>{if(b.flooded)return;st.setCargo(b,n+1,50,2.6);n++;b.vy-=6;snd.pop();if(!b.flooded&&b.m<=b.V)maxFloat=Math.max(maxFloat,n)};
+ $('#lr',P).onclick=()=>{boat();snd.pop()};
+ function sank(){$('#la',P).disabled=true;setFb(c.host,'oops',`SPLASH! With ${n} crates (${b.m} g) the boat sank. Your prediction was ${pred}.`);
+  if(phase===0){phase=1;setTimeout(()=>numQ($('#lq',P),{c,q:'So what is the MOST crates the boat can carry and still float?',ans:6,unit:'crates',hint:'It sank with 7. So the most that floated was one less. Check: 100 + 6×50 = 400 g, less than 420 g.',ok:()=>{snd.ok();const q2=document.createElement('div');q2.className='panel sub';P.appendChild(q2);
+   setFb(c.host,'teach','Now be a safe captain. Unload, then load again, keeping the water BELOW the yellow safety line.');
+   numQ(q2,{c,spark:true,q:'The yellow safety line is 4 of the 5 cm hull height. How many crates can you load and still keep the water BELOW the yellow line? (Test it!)',ans:4,unit:'crates',hint:'Unload and test! Or use numbers: below the line the boat can push aside about 4/5 of 420 g = 336 g. 100 + 4×50 = 300 g.',focus:false,ok:()=>c.finish(A.win)})}}),700)}}
+ const _rb=$('#lr',P).onclick;$('#lr',P).onclick=()=>{_rb();$('#la',P).disabled=false}};
+
+/* ---- submarine pilot ---- */
+T.sub=(body,A,c)=>{const st=stg(body,{env:'sea',sky:'#bfe9ff',sky2:'#e8f7ff',vessels:[{w:40,d:14,h:26,level0:24,rho:1,water:0x1663c7,op:.5,zone:[8,15]}],ty:.48,dist:1.2});const P=panel(body);
+ const V=Math.PI*2.2*2.2*10,U=6,base=V-5*U;let bal=0,step=0,hov=0;
+ st.add({look:'chest',shape:'box',w:3.4,h:2.6,d:2.4,m:60,x:9,y:0,emo:'💰'});
+ const sub=st.add({look:'sub',shape:'cylH',r:2.2,L:10,m:base,x:-4,y:21,ballast:0,emo:'🟨'});
+ const tasks=['🪸 Dive down to the seabed (by the treasure)','🌊 Come back up to the surface','🟩 Hover inside the green zone for 3 seconds'];
+ P.innerHTML=`<div class="q">Ballast tanks: <b id="sb">0</b> of 10 full of water</div><input type="range" class="rng sea" min="0" max="10" value="0" id="sr" aria-label="Ballast water"><div class="muted center">⬅ more air (lighter) · more water (heavier) ➡</div><ol class="tasks">${tasks.map((t,i)=>`<li data-i="${i}">${t}</li>`).join('')}</ol>`;
+ const mark=()=>$$('.tasks li',P).forEach((l,i)=>{l.classList.toggle('ok',i<step);l.classList.toggle('on',i===step)});mark();
+ $('#sr',P).oninput=e=>{bal=+e.target.value;$('#sb',P).textContent=bal;sub.m=base+bal*U;sub.ballast=bal/10;snd.pop()};
+ st.hud.innerHTML=`<span id="sd">Depth: 0 m</span><span id="sm">${bal<5?'⬆️ lighter than water':'…'}</span>`;
+ st.cfg.onTick=dt=>{const lv=st.sim.level(0);const depth=Math.max(0,lv-(sub.y+sub.H));$('#sd',st.hud).textContent=`Depth: ${Math.round(depth*4)} m`;const d=sub.m/sub.V;$('#sm',st.hud).textContent=Math.abs(d-1)<.004?'⚖️ balanced (hovers)':d<1?'⬆️ lighter than water':'⬇️ heavier than water';
+  if(c.done)return;
+  if(step===0&&sub.y<.4){step=1;mark();c.good('You reached the seabed! Treasure found! 💰 Now empty the tanks to rise.')}
+  else if(step===1&&sub.y+sub.H>lv-.3&&sub.vy>-1&&sub.y>14){step=2;mark();c.good('Surfaced! Now the hardest mission: hover in the green zone. Tip: sink into the zone, then make the sub exactly as heavy as water.')}
+  else if(step===2){const cy=sub.y+sub.r;if(cy>8&&cy<15&&Math.abs(sub.vy)<1.2){hov+=dt;$('#sm',st.hud).textContent=`🟩 hovering ${Math.min(3,hov).toFixed(1)} s`;if(hov>=3){step=3;mark();c.finish(A.win)}}else hov=0}};
+ setTimeout(()=>{if(!c.done&&step===0)setFb(c.host,'hint','Hint: slide the ballast to the right to fill the tanks with water. The sub gets heavier for its size and dives!',false)},9000)};
+
+/* ---------- views ---------- */
+const app=()=>$('#app');
+const skey=(n,i)=>n+'-'+i;
+const KIND={predict:'Predict & test',sort:'Drag & sort',cubes:'3D cube lab',order:'Reasoning',build:'Build & test',quiz:'Puzzle',clay:'3D shape lab',fair:'Plan a fair test',displace:'3D jar lab',crown:'3D mystery',egg:'3D experiment',twin:'3D compare',berg:'3D guess & test',load:'3D cargo lab',sub:'3D pilot'};
+let READY=null;
+function killStage(){if(STAGE)STAGE.dispose()}
+function heroStage(host){READY.then(()=>{if(!host.isConnected)return;const st=new Stage(host,{vessels:[{w:34,d:14,h:14,level0:9,rho:1}],ty:.42,dist:1.1,aspect:.5,maxH:260,sky:'#9ad8ff',sky2:'#fff1d6'});
+ const add=(o,x,z,y)=>{const b=st.add(Object.assign({x,z,y:y!=null?y:8.5,vy:0},o));return b};
+ add({look:'hull',shape:'hull',w:9,d:5,h:3.5,m:70,col:0xe63946,col2:0x1d3557,rim:0xffffff,plim:.8,face:true},-8,0);
+ add(mk('ball',{face:true}),4,-2);add(mk('wood',{face:true}),12,2);add(mk('stone'),-1,3,0);add(mk('coin'),8,4,0);add(mk('apple'),15,-3);
+ let tt=0;st.cfg.onTick=dt=>{tt+=dt;if(tt>4){tt=0;const b=st.items[Math.floor(Math.random()*st.items.length)];if(b&&b.inW&&b.y>1)b.vy-=12}}})}
+function mapSVG(){const N=STATIONS.length,H=N*120;const pts=STATIONS.map((s,i)=>[i%2?72:28,60+i*120]);let d=`M${pts[0][0]} ${pts[0][1]}`;for(let i=1;i<N;i++){const [x0,y0]=pts[i-1],[x1,y1]=pts[i];d+=` C${x0} ${y0+60} ${x1} ${y1-60} ${x1} ${y1}`}
+ return {H,pts,svg:`<svg class="path" viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${d}" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-dasharray="3 3" vector-effect="non-scaling-stroke" style="stroke-width:5px"/></svg>`}}
+function home(){hush();killStage();window.scrollTo(0,0);$('#bar .t').textContent='Float or Sink Quest';
+ const nxt=STATIONS.find(s=>!S.done[s.id]);
+ const hello=allDone()?`Super work, ${NAME}! Every mission is complete. Open your gift!`:(nStars()?`Welcome back, ${NAME}! Ready for the next mission?`:`Hi ${NAME}! I am Zippy. Why does a giant ship float but a tiny coin sink? Let us find the secret together!`);
+ const mp=mapSVG();
+ app().innerHTML=`<section class="card hero"><h1>🚢 Float or Sink?</h1><div class="sub">The secret of why ships float · Class 4 Science · JEE foundation</div><div id="hero3d" class="hero3d"></div>${guideHTML(M.teach,'',hello+` <button class="say" type="button" data-say="${hello}" aria-label="Read aloud">🔊</button>`)}</section>
+ <section class="seamap" style="height:${mp.H}px">${mp.svg}<div class="waves"></div>${STATIONS.map((s,i)=>{const st=s.acts.map((a,j)=>S.stars[skey(s.id,j)]?'⭐':'☆').join('');const lk=!open(s.id);const [x,y]=mp.pts[i];return `<button class="isl ${lk?'lock':''} ${nxt&&nxt.id===s.id&&!lk?'next':''} ${S.done[s.id]?'done':''}" type="button" data-st="${s.id}" style="left:${x}%;top:${y}px;--c:${s.c};--bg:${s.bg}" ${lk?'aria-disabled="true"':''}><span class="ic">${lk?'🔒':s.icon}</span><span class="tx"><span class="mn">${s.final?'Final':'Mission '+s.id}</span><span class="nm">${s.title}</span><span class="st" aria-label="stars">${st}${S.done[s.id]?' ✅':''}</span></span>${nxt&&nxt.id===s.id&&!lk?'<span class="boat" aria-hidden="true">⛵</span>':''}</button>`}).join('')}</section>
+ <section class="card"><h3 class="center">🏅 Badge collection</h3><div class="stickers">${STATIONS.map(s=>`<div class="stk ${S.done[s.id]?'got':''}" title="${s.sticker[1]}">${S.done[s.id]?s.sticker[0]:'?'}<small>${S.done[s.id]?s.sticker[1]:''}</small></div>`).join('')}</div></section>
+ <section class="card giftcard">${allDone()?`<button class="giftbtn wig" type="button" id="gift" aria-label="Open your gift">🎁</button><div><b>Your gift is ready. Tap it!</b></div>`:`<div class="giftbtn" aria-hidden="true" style="opacity:.5">🎁</div><div class="muted">Finish all ${NST} missions to unlock your Captain's certificate.</div>`}${allDone()&&S.gift?`<div class="row"><button class="btn o" type="button" id="seecert">🏆 My certificate</button></div>`:''}</section>
+ <div class="foot"><button type="button" id="unl">Grown-ups: unlock all missions</button> · <button type="button" id="rst">Start again</button></div>`;
+ heroStage($('#hero3d'));
+ app().onclick=e=>{const b=e.target.closest('.isl');if(b){const n=+b.dataset.st;if(!open(n)){say('Finish the mission before this one first!',true);b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),500);return}station(n,0);return}
+  if(e.target.closest('#gift'))gift();if(e.target.closest('#seecert'))cert();if(e.target.closest('#unl')){S.all=true;save();home()}if(e.target.closest('#rst')&&confirm('Start the quest again? Stars and badges will be cleared.')){const v=S.voice;S={stars:{},done:{},voice:v,gift:false};save();hud();home()}};
+ if(allDone()&&!S.gift)setTimeout(gift,400);
+}
+function station(n,step){hush();killStage();const s=STATIONS[n-1];window.scrollTo(0,0);$('#bar .t').textContent=`${s.final?'Final':'Mission '+n}: ${s.title}`;
+ const lab=['📖 Learn',...s.acts.map((a,i)=>a.bonus?'⚡ Challenge':'🎮 Play '+(i+1))];
+ const stepsHTML=`<div class="steps">${lab.map((l,i)=>`<span class="${i===step?'on':''} ${(i===0&&step>0)||(i>0&&S.stars[skey(n,i-1)])?'ok':''}">${l}</span>`).join('')}</div>`;
+ const head=`<div class="sth" style="--c:${s.c};--bg:${s.bg}"><span class="ic">${s.icon}</span><h2>${s.title}</h2></div>`;
+ if(step===0){
+  app().innerHTML=`<section class="card lesson">${stepsHTML}${head}<div class="pics">${mimg(s.img,'pic')}${s.img2?mimg(s.img2,'pic'):''}${n===6?mimg('fish','pic'):''}</div>${guideHTML(M.teach,'',`Lesson time! Tap any card to hear it.`,true)}<div id="lines">${s.lesson.map(l=>`<button class="line" type="button" data-say="${clean(l[1])}"><span class="e">${l[0]}</span><span>${l[1]}</span></button>`).join('')}</div><div class="skills">🎯 Skills: ${s.skills}</div><div class="row"><button class="btn soft" type="button" id="readall">🔊 Read to me</button><button class="btn g" type="button" id="go">Start the activity ▶</button></div></section>`;
+  $('#readall').onclick=()=>readAll();$('#go').onclick=()=>{hush();station(n,1)};return}
+ const A=s.acts[step-1],key=skey(n,step-1),last=step===s.acts.length;
+ app().innerHTML=`<section class="card act">${stepsHTML}${head}<div class="actt">${A.bonus?'⚡ ':''}${KIND[A.type]}: ${A.title}</div>${guideHTML(A.bonus?M.think:M.teach,A.bonus?'hint':'',A.intro,true)}<div id="body"><div class="loading">Loading the 3D lab…</div></div><div class="row" id="nav"><button class="btn soft" type="button" id="back">◀ Back</button><button class="btn g" type="button" id="next" ${S.stars[key]?'':'disabled'}>${last?'Finish mission 🏁':'Next activity ▶'}</button></div></section>`;
+ const host=app().querySelector('.card');
+ const c=ctx(host,A,()=>{const first=!S.stars[key];S.stars[key]=1;save();if(first)flyStar($('#fb .bub',host));else hud();$('#next').disabled=false;setTimeout(()=>$('#nav').scrollIntoView({behavior:'smooth',block:'nearest'}),400)});
+ READY.then(()=>{const b=$('#body');if(!b)return;b.innerHTML='';T[A.type](b,A,c);if(A.type!=='quiz')setTimeout(()=>say(A.intro),150)});
+ $('#back').onclick=()=>station(n,step-1);
+ $('#next').onclick=()=>{if(!last)station(n,step+1);else stationDone(n)};
+}
+function readAll(){hush();const L=$$('#lines .line');let i=0;const nx=()=>{L.forEach(x=>x.classList.remove('rd'));if(i>=L.length)return;const l=L[i++];l.classList.add('rd');speak(l.dataset.say,()=>setTimeout(nx,250))};nx();if(!('speechSynthesis' in window))L.forEach(x=>x.classList.add('rd'))}
+function stationDone(n){killStage();const s=STATIONS[n-1];const first=!S.done[n];S.done[n]=1;save();hud(true);snd.win();confetti(170);setTimeout(()=>confetti(90),600);
+ const t=first?`${s.final?'Final challenge':'Mission '+n} complete! You earned the ${s.sticker[1]} badge!`:`Mission ${n} complete again. Great practice!`;
+ const m=modal(`${mimg(M.fox,'mas')}<div class="bigstk">${s.sticker[0]}</div><h2>${t}</h2><div class="muted">⭐ ${nStars()} of ${TOTAL} stars · ${Object.keys(S.done).length} of ${NST} badges</div><div class="row">${allDone()?`<button class="btn o" type="button" data-close id="mgo">🎁 Open my gift!</button>`:`<button class="btn g" type="button" data-close id="mgo">Next mission ▶</button>`}<button class="btn soft" type="button" data-close id="mmap">🗺️ Map</button></div>`);
+ say(t);
+ $('#mgo',m.el).onclick=()=>{if(allDone())home();else{const nx=STATIONS.find(x=>!S.done[x.id]);station(nx?nx.id:Math.min(NST,n+1),0)}};
+ $('#mmap',m.el).onclick=()=>home();
+}
+function gift(){if($('.ov'))return;snd.pop();say('A gift for you! Tap the treasure chest three times to open it.');let taps=0;
+ const m=modal(`${mimg('ship','mas')}<h2>🎁 A gift for ${NAME}!</h2><button class="giftbtn wig" type="button" id="gb" aria-label="Tap the gift">🧰</button><div class="muted" id="gt">Tap the treasure chest 3 times!</div>`);
+ $('#gb',m.el).onclick=()=>{taps++;snd.pop();confetti(20);$('#gb',m.el).style.transform=`scale(${1+taps*.15})`;$('#gt',m.el).textContent=taps<3?`${3-taps} more!`:'';if(taps>=3){S.gift=true;save();m.close();badge()}};
+}
+function badge(){snd.win();confetti(260);setTimeout(()=>confetti(180),700);const t=`Congratulations, ${NAME}! You are a Buoyancy Captain!`;say(t);
+ const m=modal(`${mimg(M.party,'mas')}<div class="badge"><div class="e">🛟 ⚓</div><div class="t">BUOYANCY<br>CAPTAIN</div><div class="e">🚢🥚👑</div></div><h2>${t}</h2><div class="row"><button class="btn o" type="button" data-close id="toc">🏆 See my certificate</button></div>`);
+ $('#toc',m.el).onclick=()=>cert();
+}
+function cert(){hush();killStage();window.scrollTo(0,0);$('#bar .t').textContent='My certificate';const d=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+ app().innerHTML=`<section class="card cert" id="cert">${mimg(M.party)}<h2>🏆 Buoyancy Captain</h2><div>This certificate is proudly awarded to</div><div class="nm">${NAME}</div><div>for completing <b>Float or Sink: the secret of why ships float</b>: predicting and testing, density with cubes, shape and upthrust, Archimedes' displacement, salty water, cargo ships, submarines and JEE spark puzzles.</div><div class="certf"><span>🛟 less than 10 g per cube floats</span><span>🛁 floaters push aside their weight</span><span>🥚 salt water pushes harder</span></div><div><b>⭐ ${nStars()} of ${TOTAL} stars</b> · <b>${Object.keys(S.done).length} badges</b></div><div class="stickers" style="margin:8px 0">${STATIONS.map(s=>`<div class="stk ${S.done[s.id]?'got':''}">${S.done[s.id]?s.sticker[0]:'?'}</div>`).join('')}</div><div class="muted">Class 4 Science · ${d}</div><div class="muted">Signed: Zippy 👽, Professor Owl 🦉, Detective Fox 🦊 and Archimedes 🛁</div></section><div class="row"><button class="btn" type="button" id="pr">🖨️ Print</button><button class="btn soft" type="button" id="hm">🗺️ Map</button></div>`;
+ confetti(120);$('#pr').onclick=()=>window.print();$('#hm').onclick=()=>home();
+}
+/* ---------- boot ---------- */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(b){say(b.getAttribute('data-say'),true);const l=b.closest('.line');if(l){$$('.line').forEach(x=>x.classList.remove('rd'));l.classList.add('rd')}}});
+$('#home').onclick=()=>home();
+$('#voice').onclick=()=>{S.voice=!S.voice;save();hud();if(!S.voice)hush();else say('Voice is on!')};
+if(/[?&]all=1/.test(location.search)){S.all=true}
+READY=load3D();
+hud();home();
+if('speechSynthesis' in window&&speechSynthesis.getVoices)try{speechSynthesis.getVoices()}catch(e){}
+window.__FS={STATIONS,T,station,home,cert,CF,get STAGE(){return STAGE},has3D,S};
+
+</script></body></html>
