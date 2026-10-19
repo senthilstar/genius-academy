@@ -4,7 +4,7 @@
 <meta name="description" content="Float or Sink: the secret of why ships float. Interactive 3D density and buoyancy missions for Class 4.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%9A%A2%3C/text%3E%3C/svg%3E">
 <link rel="preload" href="assets/alien_teach.webp" as="image">
-<link rel="modulepreload" href="assets/three.min.mjs">
+<link rel="modulepreload" href="assets/three.min.mjs?v=1">
 <style>@font-face{font-family:"NunitoE";src:url(assets/nunito.woff2) format("woff2");font-weight:200 1000;font-display:swap}
 :root{--ink:#27324a;--sun:#ffd23f;--leaf:#2fb872;--leaf2:#1f8f57;--berry:#ff6a8d;--ocean:#2e86ff;--grape:#7d4fe8;--orange:#ff9b3d;--mint:#7fdcc1}
 *{box-sizing:border-box}
@@ -591,7 +591,7 @@ async function load3D(){
  if(NOGL){glFail=true;return false}
  try{const c=document.createElement('canvas');const g=c.getContext('webgl2')||c.getContext('webgl');if(!g)throw new Error('no webgl');
   const lose=g.getExtension('WEBGL_lose_context');if(lose)lose.loseContext();
-  THREE=await import('./assets/three.min.mjs');
+  THREE=await import('./assets/three.min.mjs?v=1');
   GL=new THREE.WebGLRenderer({antialias:true,powerPreference:'default',alpha:false});
   GL.setPixelRatio(DPR);GL.outputColorSpace=THREE.SRGBColorSpace;GL.domElement.className='gl';
   GL.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();GLLOST=true},false);
